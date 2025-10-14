@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Каталог - Мебельный салон</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Небольшая локальная правка: ссылка вокруг карточки должна выглядеть как блок */
+    a.product-link { text-decoration: none; color: inherit; display: block; }
+    h2 { margin-top: 36px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="header_class">
+      <div class="logotip">Логотип</div>
+      <div class="name_site"><h1>Название Сайта</h1></div>
+      <div class="full_login">
+        <form class="login" action="#" method="get" onsubmit="return false;">
+          <label for="login">Логин</label>
+          <input id="login" name="login" type="text">
+          <label for="password">Пароль</label>
+          <input id="password" name="password" type="password">
+          <button type="submit" class="login-btn">Войти</button>
+        </form>
+      </div>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="index.html">Каталог</a></li>
+        <li><a href="#contacts">Контакты</a></li>
+        <li><a href="#profile">Профиль</a></li>
+      </ul>
+    </nav>
+
+    <hr>
+
+    <div class="main_content">
+      <aside>
+        <ul>
+          <li><a href="#sofas">Диваны</a></li>
+          <li><a href="#wardrobes">Шкафы</a></li>
+          <li><a href="#beds">Кровати</a></li>
+          <li><a href="#all">Все товары</a></li>
+        </ul>
+      </aside>
+
+      <main>
+        <h2 id="sofas">Диваны</h2>
+        <div class="products-grid" aria-labelledby="sofas">
+          <a class="product-link" href="product-sofa-1.html" aria-label="Sofa Aurora">
+            <article class="product-card" role="article" tabindex="0" data-id="sofa-1">
+              <img src="./img/sofa1.png" alt="Sofa Aurora" class="product-img">
+              <div class="title">Sofa Aurora</div>
+              <div class="price">100 400 ₽</div>
+              <div class="desc">3-местный диван: жаккардовая обивка, высокий ППУ, пружинный блок, съемные подушки.</div>
+            </article>
+          </a>
+
+          <a class="product-link" href="product-sofa-2.html" aria-label="Sofa Luna">
+            <article class="product-card" role="article" tabindex="0" data-id="sofa-2">
+              <img src="./img/sofa2.png" alt="Sofa Luna" class="product-img">
+              <div class="title">Sofa Luna</div>
+              <div class="price">78 400 ₽</div>
+              <div class="desc">Компактный еврокнижка: каркас из массива, быстрая трансформация, идеально для малосемейки.</div>
+            </article>
+          </a>
+
+          <a class="product-link" href="product-sofa-3.html" aria-label="Sofa Cosmo">
+            <article class="product-card" role="article" tabindex="0" data-id="sofa-3">
+              <img src="./img/sofa3.png" alt="Sofa Cosmo" class="product-img">
+              <div class="title">Sofa Cosmo</div>
+              <div class="price">125 900 ₽</div>
+              <div class="desc">Премиум линейка: встроенные USB-порты, опционная подсветка, усиленный каркас.</div>
+            </article>
+          </a>
+        </div>
+
+        <h2 id="wardrobes">Шкафы</h2>
+        <div class="products-grid" aria-labelledby="wardrobes">
+          <a class="product-link" href="product-wardrobe-1.html" aria-label="Шкаф Atlas">
+            <article class="product-card" role="article" tabindex="0" data-id="wardrobe-1">
+              <img src="./img/wardrobe1.png" alt="Шкаф Atlas" class="product-img">
+              <div class="title">Шкаф Atlas</div>
+              <div class="price">18 990 ₽</div>
+              <div class="desc">МДФ ламинированный, 4 полки + штанга, регулируемые полки, компактный и практичный.</div>
+            </article>
+          </a>
+
+          <a class="product-link" href="product-wardrobe-2.html" aria-label="Шкаф Orion">
+            <article class="product-card" role="article" tabindex="0" data-id="wardrobe-2">
+              <img src="./img/wardrobe2.png" alt="Шкаф Orion" class="product-img">
+              <div class="title">Шкаф Orion</div>
+              <div class="price">27 900 ₽</div>
+              <div class="desc">Широкий шкаф с зеркальными дверями, подсветкой и доводчиками, идеален для спальни.</div>
+            </article>
+          </a>
+
+          <a class="product-link" href="product-wardrobe-3.html" aria-label="Шкаф Compact">
+            <article class="product-card" role="article" tabindex="0" data-id="wardrobe-3">
+              <img src="./img/wardrobe3.png" alt="Шкаф Compact" class="product-img">
+              <div class="title">Шкаф Compact</div>
+              <div class="price">13 250 ₽</div>
+              <div class="desc">Бюджетный шкаф: ЛДСП, вариации цвета, быстрое решение для гостиной или детской.</div>
+            </article>
+          </a>
+        </div>
+
+        <h2 id="beds">Кровати</h2>
+        <div class="products-grid" aria-labelledby="beds">
+          <a class="product-link" href="product-bed-1.html" aria-label="Кровать Serenity">
+            <article class="product-card" role="article" tabindex="0" data-id="bed-1">
+              <img src="./img/bed1.png" alt="Кровать Serenity" class="product-img">
+              <div class="title">Кровать Serenity</div>
+              <div class="price">9 876 ₽</div>
+              <div class="desc">Односпальная: ортопедическое основание на ламелях, усиленный каркас, лёгкая сборка.</div>
+            </article>
+          </a>
+
+          <a class="product-link" href="product-bed-2.html" aria-label="Кровать Royal">
+            <article class="product-card" role="article" tabindex="0" data-id="bed-2">
+              <img src="./img/bed2.png" alt="Кровать Royal" class="product-img">
+              <div class="title">Кровать Royal</div>
+              <div class="price">25 900 ₽</div>
+              <div class="desc">Двуспальная кровать: массив + текстиль, ящик для белья, стильное изголовье.</div>
+            </article>
+          </a>
+
+          <a class="product-link" href="product-bed-3.html" aria-label="Кровать Cozy">
+            <article class="product-card" role="article" tabindex="0" data-id="bed-3">
+              <img src="./img/bed3.png" alt="Кровать Cozy" class="product-img">
+              <div class="title">Кровать Cozy</div>
+              <div class="price">14 950 ₽</div>
+              <div class="desc">Кровать Cozy: современный дизайн, сборка за 30 минут, подходит для небольших квартир.</div>
+            </article>
+          </a>
+        </div>
+
+      </main>
+    </div>
+
+    <footer>
+      <p>@ <span id="year">2025</span> Все права защищены</p>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

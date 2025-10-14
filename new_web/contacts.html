@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width">
+    <title>Контакты - Магазин мебели</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Обертка для белых колонок -->
+    <div class="page-wrapper">
+        <header class="header_class">
+            <div class="logotip">Логотип</div>
+            <div class="name_site">
+                <h1>НАЗВАНИЕ САЙТА</h1>
+            </div>
+            <div class="full_login">
+                <form class="login" action="login.html" method="get">
+                    <label for="login">Логин</label>
+                    <input id="login" name="login" type="text">
+                    <label for="password">Пароль</label>
+                    <input id="password" name="password" type="password">
+                    <button type="submit" class="login-btn">Войти</button>
+                </form>
+            </div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+                <li><a href="login.html">Профиль</a></li>
+            </ul>
+        </nav>
+
+        <hr>
+
+        <div class="main_content">
+            <aside>
+                <ul>
+                    <li><a href="#contact_info">Контактная информация</a></li>
+                    <li><a href="#map">Карта</a></li>
+                    <li><a href="#search">Поиск</a></li>
+                    <li><a href="#banners">Баннеры</a></li>
+                </ul>
+            </aside>
+
+            <main>
+                <section id="contact_info">
+                    <h1>Контакты</h1>
+                    <p>ФИО: <b>Наточий Владислав Александрович</b></p>
+                    <p>Телефон: <b>+7(917)099-43-28</b></p>
+                    <p>Почта: <b>nva@yandex.ru</b></p>
+                </section>
+
+                <section id="map">
+                    <h2>Мы на карте</h2>
+                    <img src="https://api-maps.yandex.ru/services/constructor/1.0/static/?um=constructor%3A053bd947d462cc1a45aeba4070defff75501905071c0eaf68436ac9976ec698c&amp;width=500&amp;height=400&amp;lang=ru_RU" alt="Карта" style="border: 0; max-width: 100%;">
+                </section>
+
+                <section id="search">
+                    <h2>Поиск</h2>
+                    <form class="search-form">
+                        <input type="text">
+                        <button>Искать</button>
+                    </form>
+                </section>
+
+            </main>
+        </div>
+
+        <footer>
+            <p>@ <span id="year">2025</span> Все права защищены</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

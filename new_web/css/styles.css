@@ -1,0 +1,269 @@
+/* styles.css — чистая и современная версия твоего CSS */
+
+/* =============== базовые переменные =============== */
+:root{
+  --bg-page: #f0f0f0;
+  --wrap-bg: #ffffff;
+  --text: #222;
+  --muted: #6b7280;
+  --accent: #f6c84c;
+  --card-bg: #ffffff;
+  --border: #e5e7eb;
+  --header-bg: #cdc3c3;
+}
+
+/* =============== сброс / базовые правила =============== */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;font-family: Arial, Helvetica, sans-serif;background:var(--bg-page);color:var(--text);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%;display:block;height:auto}
+
+/* =============== контейнер страницы =============== */
+.page-wrapper{
+  max-width:1200px;
+  margin:0 auto;
+  background:var(--wrap-bg);
+  min-height:100vh;
+  /* белые колонки по бокам сохранились визуально через пространство вокруг контейнера,
+     поэтому box-shadow с белым цветом не нужен — удалён */
+}
+
+/* =============== header =============== */
+.header_class{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 20px;
+  background:var(--header-bg);
+  color:var(--text);
+  gap:12px;
+}
+
+/* логотип слева: фиксированная ширина */
+.header_class .logotip{
+  flex:0 0 140px;
+  padding-left:10px;
+  font-weight:700;
+  font-size:1.05rem;
+}
+
+/* центр — гибкий */
+.header_class .name_site{
+  flex:1 1 auto;
+  text-align:center;
+  margin:0 12px;
+}
+
+/* правая колонка — форма */
+.header_class .full_login{
+  flex:0 0 260px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+/* форма: grid для аккуратных колонок (label / input) */
+.header_class .login{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  grid-auto-rows:auto;
+  gap:8px 12px;
+  align-items:center;
+  width:100%;
+}
+
+/* метки и инпуты */
+.header_class .login label{
+  justify-self:start;
+  color:var(--text);
+  font-size:0.9rem;
+  padding-right:4px;
+}
+
+.header_class .login input{
+  width:100%;
+  padding:6px 8px;
+  border-radius:4px;
+  border:1px solid var(--border);
+  background:transparent;
+  box-sizing:border-box;
+  color:var(--text);
+}
+
+/* кнопка: занимает колонку input и прижата вправо */
+.header_class .login .login-btn{
+  grid-column:2 / 3;
+  justify-self:end;
+  padding:6px 12px;
+  background:#d7d7d6;
+  color:#000;
+  border-radius:4px;
+  cursor:pointer;
+  border:2px solid #ccc;
+  font-size:14px;
+  box-shadow: inset 0 0 0 1px #fff;
+}
+
+/* =============== основная разметка =============== */
+nav{
+  padding:10px 20px;
+  border-bottom:1px solid var(--border);
+  background:transparent;
+}
+nav ul{
+  list-style:none;
+  display:flex;
+  gap:20px;
+  margin:0;
+  padding:0;
+  justify-content:center;
+}
+nav a{
+  text-decoration:none;
+  color:var(--muted);
+  padding:8px 10px;
+  border-radius:6px;
+}
+nav a:hover{color:var(--text); background:rgba(0,0,0,0.03)}
+
+/* main layout */
+.main_content{
+  display:flex;
+  gap:20px;
+  padding:20px;
+  align-items:flex-start;
+  justify-content:space-between;
+  background:var(--header-bg);
+}
+
+/* aside (категории) */
+.main_content aside{
+  width:25%;
+  min-width:200px;
+}
+.main_content aside ul{
+  padding:20px;
+  list-style:none;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  underline: true;
+  color: blue;
+}
+.main_content aside a{
+  display:block;
+  padding:8px 10px;
+  color:var(--text);
+  text-decoration:none;
+  border-radius:6px;
+}
+.main_content aside a:hover{background:rgba(0,0,0,0.03)}
+
+/* контент (основная колонка) */
+.main_content main{
+  width:75%;
+}
+
+/* базовые стили для изображений товаров */
+.product-card .product-img {
+  width: 100%;
+  height: 160px;      /* фиксированная высота превью в карточке */
+  object-fit: cover;  /* обрезает/масштабирует аккуратно */
+  border-radius: 8px;
+}
+
+/* таблицы */
+table{
+  border-collapse:collapse;
+  border:2px solid var(--text);
+}
+tr, td{
+  border:1px solid var(--text);
+  padding:5px; /* исправлено: 5px, не "5 px" */
+}
+
+/* правая колонка с картинкой (если используется) */
+.image-right{
+  width:300px;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+}
+.image-right img{max-width:100%; height:auto; display:block}
+
+/* =============== карточки товаров (если захочешь добавить) =============== */
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); /* чуть больше min width */
+  gap: 28px;   /* расстояние между карточками */
+  margin-top:18px;
+  padding-bottom:10px;
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+}
+
+.product-card {
+  height: 100%;                /* растянуть карточку на высоту ячейки */
+  display: flex;
+  flex-direction: column;     /* чтобы можно было "прижать" нижнюю часть */
+  gap: 12px;
+  padding: 14px;              /* небольшая внутренняя паддинг-коррекция */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  background: white;
+}
+
+.product-card .meta-bottom {
+  margin-top: auto;   /* этот блок будет прижат к низу карточки */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-card .desc {
+  color: var(--muted);
+  font-size: 0.95rem;
+
+  /* Обрезка по строкам (работает в современных браузерах) */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;   /* показывать не более 3 строк */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+.product-card .title{font-weight:600; color:var(--text)}
+.product-card .price{color:var(--accent); font-weight:700}
+.product-card .desc{color:var(--muted); font-size:0.95rem}
+
+/* =============== адаптив =============== */
+@media (max-width:900px){
+  .main_content{flex-direction:column; padding:14px}
+  .main_content aside{width:100%; order:2}
+  .main_content main{width:100%; order:1}
+  .header_class .full_login{flex:1; justify-content:center}
+}
+
+/* на узких экранах — header в колонку */
+@media (max-width:700px){
+  .header_class{
+    flex-direction:column;
+    align-items:stretch;
+    gap:8px;
+  }
+  .header_class .logotip,
+  .header_class .name_site,
+  .header_class .full_login{
+    flex:none;
+    width:100%;
+    text-align:center;
+  }
+  .header_class .login{grid-template-columns:1fr}
+  .header_class .login .login-btn{justify-self:center; grid-column:1}
+}
+
+/* небольшой утилитарный класс для акцента */
+.text-muted{color:var(--muted)}
+.small{font-size:0.86rem}

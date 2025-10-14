@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width,initial-scale=1">
+        <title>Мебельный салон</title>
+        <link rel="stylesheet" href="css/styles.css">
+        <!-- Подключаем стили модального окна согласий (создай этот файл по примеру в предыдущем сообщении) -->
+        <link rel="stylesheet" href="css/consent.css">
+    </head>
+<body>
+    <!-- Обертка для белых колонок -->
+    <div class="page-wrapper">
+        <header class="header_class">
+            <div class="logotip">Логотип</div>
+
+            <div class="name_site">
+                <h1>Название Сайта</h1>
+            </div>
+
+            <div class="full_login">
+                <!-- 1) Добавил id="registerForm" и onsubmit="return false;" — форма обрабатывается JS (демо) -->
+                <form id="registerForm" class="login" action="#" method="post" onsubmit="return false;">
+                    <label for="login">логин:</label>
+                    <input id="login" name="login" type="text" required>
+
+                    <label for="password">пароль:</label>
+                    <input id="password" name="password" type="password" required>
+
+                    <button type="submit" class="login-btn">Войти / Зарегистрироваться</button>
+                </form>
+            </div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="catalog.html">каталог</a></li>
+                <li><a href="contacts.html">контакты</a></li>
+                <li><a href="login.html">профиль</a></li>
+                <!-- убрал дубликат -->
+            </ul>
+        </nav>
+
+
+        <div class="main_content">
+            <aside>
+                <ul style="color: blue; text-decoration: underline">
+                    <li><a href="#about_us">раздел 1</a></li>
+                    <li><a href="#history">раздел 2</a></li>
+                    <li><a href="#workers">раздел 3</a></li>
+                    <li><a href="#contacts">раздел 4</a></li>
+                </ul>
+            </aside>
+
+            <main>
+                <section id="about_us">
+                    <h1>О нас</h1>
+                    <p>Наша компания занимается мебелью и интерьером, мы поможем подобрать все под вашу однушку в <i>Бутово</i></p>
+                    <p>Вы можете довериться нашему вкусу, ведь вот уже много лет, мы рубим леса в Сибири, чтобы у вас была лучшая в мире <b>тумбочка</b></p>
+                </section>
+
+                <section id="history">
+                    <h1>История</h1>
+                    <p>Наша компания существует очень долгое время и все это время мы радуем наших клиентов</p>
+                </section>
+
+                <section id="workers">
+                    <h1>Наша команда</h1>
+                    <p>Люди, которые работают с нами</p>
+                    
+                    <table frame="border" cellspacing="12" cellpadding="2">
+                        <tr>
+                            <td colspan="2" rowspan="2">Наша мебель</td>
+                            <td>Тумбочки</td>
+                            <td>Шкафы</td>
+                        </tr>
+                        <tr>
+                            <td>Лось</td>
+                            <td>Олень</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Наш материал</td>
+                            <td colspan="2">только оранжевый клен</td>
+                        </tr>
+                    </table>
+
+                    <ul type="square">
+                        <li>Угабуга</li>
+                        <li>Бим бам</li>
+                        <li>Танцуем на костях</li>
+                    </ul>
+                    <ol type="I">
+                        <li>Мип мип</li>
+                        <li>Бам юам</li>
+                        <li>Csrnsdrfh</li>
+                    </ol>
+                    <ol type="1">
+                        <li>Чиселки</li>
+                            <ol type="a">
+                            <li>Вложенный</li>
+                            <li>И даже тут вложен</li>
+                            </ol>
+                        <li>Вот вторая чиселка</li>
+                        <li>Ну и третья</li>
+                    </ol>
+                </section>
+            </main>
+            <div class="image-right">
+                <img src="./img/divan.png" alt="Диван">
+            </div>
+        </div>
+        <hr>
+        <footer>
+            <p>@ <span id="year">2025</span> Все права защищены</p>
+        </footer>
+    </div>
+
+    <!-- Обязательные скрипты -->
+    <!-- Скрипт consent.js динамически вставляет модал и управляет показом. Создай этот файл по примеру, который я присылал ранее -->
+    <script src="js/consent.js" defer></script>
+
+    <script>
+        // Обновление года в футере
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Короткая демо-логика: при submit формы сохраняем профиль в localStorage
+        // и вызываем window.onRegistered() чтобы показать модал согласий.
+        (function () {
+            const FORM_ID = 'registerForm';
+            const STORAGE_KEY = 'demoUserProfile_v1';
+
+            const form = document.getElementById(FORM_ID);
+            if (!form) return;
+
+            form.addEventListener('submit', function (ev) {
+                ev.preventDefault();
+
+                const login = (document.getElementById('login') || {}).value || '';
+                const password = (document.getElementById('password') || {}).value || '';
+
+                if (!login || !password) {
+                    alert('Пожалуйста, заполните логин и пароль.');
+                    return;
+                }
+
+                // минимальный профиль (демо). На боевом сайте — отправлять на сервер.
+                const profile = {
+                    username: login,
+                    password: password, // демо! никогда так не храните пароли в реальном приложении
+                    consentPd: false,
+                    consentStore: false,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString()
+                };
+
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+                } catch (e) {
+                    console.error('Ошибка сохранения профиля', e);
+                }
+
+                // Вызвать глобальную точку входа: покажет модал согласий
+                if (window.onRegistered) {
+                    window.onRegistered();
+                } else {
+                    // если consent.js не подключился, оповестим
+                    console.warn('onRegistered not available — убедитесь, что js/consent.js подключён.');
+                }
+
+                // Для удобства — можно показать уведомление
+                alert('Профиль сохранён (демо). Пожалуйста, подтвердите согласия в появившемся окне.');
+            });
+        })();
+    </script>
+</body>
+</html>
