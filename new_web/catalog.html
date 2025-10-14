@@ -1,154 +1,546 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Каталог - Мебельный салон</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <style>
-    /* Небольшая локальная правка: ссылка вокруг карточки должна выглядеть как блок */
-    a.product-link { text-decoration: none; color: inherit; display: block; }
-    h2 { margin-top: 36px; margin-bottom: 12px; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Каталог мебели</title>
+<style>
+  :root{
+    --brand-red: #d0181e;
+    --brand-red-rgb: 208, 24, 30;
+    --brand-blue: #60a5fa;
+    --bg: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --container-max: 1100px;
+    --radius: 10px;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--text); background:#f3f6f9;}
+  .container{max-width:var(--container-max);margin:0 auto;padding:0 50px;}
+
+  /* header */
+  header.site-header{
+    position:sticky;top:0;z-index:60;
+    background: white;
+    color:var(--text);
+    box-shadow:0 6px 18px rgba(2,6,23,0.06);
+    padding:8px 0;
+  }
+
+  .top-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    cursor:pointer;
+  }
+  .brand img{height:52px; display:block}
+  .brand .title{font-weight:700; font-size:18px; color:var(--brand-red); letter-spacing:0.2px}
+
+  /* inline nav */
+  .nav-inline{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .nav-btn{
+    padding:10px 14px;
+    border-radius:8px;
+    border:0;
+    color:var(--brand-red);
+    margin-left: 20px;
+    font-weight:600;
+    cursor:pointer;
+    background: transparent;
+    transition: transform .12s ease, filter .12s ease, background-color .12s ease, box-shadow .18s ease;
+  }
+
+  .nav-btn:hover,
+  .nav-btn:focus {
+    background: rgba(var(--brand-red-rgb), 0.10);
+    transform: translateY(-2px);
+    filter: none;
+    color:var(--brand-red);
+  }
+
+  .nav-btn[aria-current="page"]{
+    background: red;
+    color: #fff;
+    box-shadow:
+      0 6px 18px rgba(var(--brand-red-rgb), 0.28),
+      0 0 40px rgba(var(--brand-red-rgb), 0.18);
+    transform: translateY(-2px);
+  }
+
+  /* правый блок с auth */
+  .controls{display:flex;align-items:center;gap:12px}
+
+  .auth-ghost{
+    padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--brand-red);font-weight:600;cursor:pointer;
+    transition: background-color .12s ease, color .12s ease, transform .08s;
+  }
+  .auth-ghost:hover{ background: rgba(var(--brand-red-rgb), 0.08); color: #fff; transform: translateY(-1px); }
+
+  /* мобильная навигация */
+  .mobile-nav{
+    display:none;
+    margin-top:10px;
+    gap:8px;
+    flex-direction:column;
+    margin-left: -8px;
+  }
+  .mobile-nav .nav-btn{
+    width:100%;
+    text-align:center;
+    background: transparent;
+    color:var(--brand-red);
+    padding:10px 12px;
+    border-radius:8px;
+  }
+  .mobile-nav .nav-btn:hover{ background: rgba(var(--brand-red-rgb), 0.10); transform: translateY(-1px); }
+
+  /* Каталог стили */
+  .catalog-container {
+    padding: 20px 0;
+  }
+
+  .catalog-header {
+    margin-bottom: 30px;
+  }
+
+  .catalog-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .catalog-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 15px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--muted);
+  }
+
+  .tab:hover {
+    background: rgba(var(--brand-red-rgb), 0.05);
+    color: var(--brand-red);
+  }
+
+  .tab.active {
+    background: var(--brand-red);
+    color: white;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+  }
+
+  .product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .product-image {
+    width: 100%;
+    height: 200px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .product-content {
+    padding: 20px;
+  }
+
+  .product-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .product-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--brand-red);
+    margin-bottom: 15px;
+  }
+
+  .product-description {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-more {
+    background: transparent;
+    border: 1px solid var(--brand-red);
+    color: var(--brand-red);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+  }
+
+  .product-more:hover {
+    background: var(--brand-red);
+    color: white;
+  }
+
+  /* footer */
+  footer.site-footer{
+    background: #ffffff;
+    color: #0f172a;
+    padding:20px 0;
+    border-top:1px solid #e6e9ee;
+    margin-top: 50px;
+  }
+  footer .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  footer .small{font-size:14px;color:#374151}
+
+  /* адаптив */
+  @media (max-width:800px){
+    .nav-inline{display:none}
+    .mobile-nav{display:flex}
+    .brand img{height:44px}
+    .brand .title{display:none}
+    .top-row{align-items:flex-start}
+    .container{padding:0 20px;}
+    
+    .catalog-tabs {
+      gap: 10px;
+    }
+    
+    .tab {
+      padding: 8px 15px;
+      font-size: 14px;
+    }
+    
+    .products-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+
+  /* фокус/доступность */
+  .nav-btn:focus,.auth-ghost:focus{outline:3px solid rgba(59,130,246,0.14); outline-offset:2px}
+</style>
 </head>
 <body>
-  <div class="page-wrapper">
-    <header class="header_class">
-      <div class="logotip">Логотип</div>
-      <div class="name_site"><h1>Название Сайта</h1></div>
-      <div class="full_login">
-        <form class="login" action="#" method="get" onsubmit="return false;">
-          <label for="login">Логин</label>
-          <input id="login" name="login" type="text">
-          <label for="password">Пароль</label>
-          <input id="password" name="password" type="password">
-          <button type="submit" class="login-btn">Войти</button>
-        </form>
+
+<header class="site-header" role="banner">
+  <div class="container">
+    <div class="top-row">
+      <div style="display:flex;align-items:center;gap:18px;min-width:0;">
+        <div class="brand" id="brand" tabindex="0" title="Перейти на главную">
+          <img src="./img/logo.png" alt="Логотип — Мебельный Дом" id="logo" />
+          <div class="title">Мебельный Дом</div>
+        </div>
+
+        <nav class="nav-inline" aria-label="Основная навигация">
+            <a href="index.html" class="nav-btn" data-page="home">Главная</a>
+            <a href="catalog.html" class="nav-btn" data-page="catalog">Каталог</a>
+            <a href="contacts.html" class="nav-btn" data-page="contacts">Контакты</a>
+            <a href="profile.html" class="nav-btn" data-page="profile">Профиль</a>
+        </nav>
       </div>
-    </header>
 
-    <nav>
-      <ul>
-        <li><a href="index.html">Главная</a></li>
-        <li><a href="index.html">Каталог</a></li>
-        <li><a href="#contacts">Контакты</a></li>
-        <li><a href="#profile">Профиль</a></li>
-      </ul>
-    </nav>
-
-    <hr>
-
-    <div class="main_content">
-      <aside>
-        <ul>
-          <li><a href="#sofas">Диваны</a></li>
-          <li><a href="#wardrobes">Шкафы</a></li>
-          <li><a href="#beds">Кровати</a></li>
-          <li><a href="#all">Все товары</a></li>
-        </ul>
-      </aside>
-
-      <main>
-        <h2 id="sofas">Диваны</h2>
-        <div class="products-grid" aria-labelledby="sofas">
-          <a class="product-link" href="product-sofa-1.html" aria-label="Sofa Aurora">
-            <article class="product-card" role="article" tabindex="0" data-id="sofa-1">
-              <img src="./img/sofa1.png" alt="Sofa Aurora" class="product-img">
-              <div class="title">Sofa Aurora</div>
-              <div class="price">100 400 ₽</div>
-              <div class="desc">3-местный диван: жаккардовая обивка, высокий ППУ, пружинный блок, съемные подушки.</div>
-            </article>
-          </a>
-
-          <a class="product-link" href="product-sofa-2.html" aria-label="Sofa Luna">
-            <article class="product-card" role="article" tabindex="0" data-id="sofa-2">
-              <img src="./img/sofa2.png" alt="Sofa Luna" class="product-img">
-              <div class="title">Sofa Luna</div>
-              <div class="price">78 400 ₽</div>
-              <div class="desc">Компактный еврокнижка: каркас из массива, быстрая трансформация, идеально для малосемейки.</div>
-            </article>
-          </a>
-
-          <a class="product-link" href="product-sofa-3.html" aria-label="Sofa Cosmo">
-            <article class="product-card" role="article" tabindex="0" data-id="sofa-3">
-              <img src="./img/sofa3.png" alt="Sofa Cosmo" class="product-img">
-              <div class="title">Sofa Cosmo</div>
-              <div class="price">125 900 ₽</div>
-              <div class="desc">Премиум линейка: встроенные USB-порты, опционная подсветка, усиленный каркас.</div>
-            </article>
-          </a>
-        </div>
-
-        <h2 id="wardrobes">Шкафы</h2>
-        <div class="products-grid" aria-labelledby="wardrobes">
-          <a class="product-link" href="product-wardrobe-1.html" aria-label="Шкаф Atlas">
-            <article class="product-card" role="article" tabindex="0" data-id="wardrobe-1">
-              <img src="./img/wardrobe1.png" alt="Шкаф Atlas" class="product-img">
-              <div class="title">Шкаф Atlas</div>
-              <div class="price">18 990 ₽</div>
-              <div class="desc">МДФ ламинированный, 4 полки + штанга, регулируемые полки, компактный и практичный.</div>
-            </article>
-          </a>
-
-          <a class="product-link" href="product-wardrobe-2.html" aria-label="Шкаф Orion">
-            <article class="product-card" role="article" tabindex="0" data-id="wardrobe-2">
-              <img src="./img/wardrobe2.png" alt="Шкаф Orion" class="product-img">
-              <div class="title">Шкаф Orion</div>
-              <div class="price">27 900 ₽</div>
-              <div class="desc">Широкий шкаф с зеркальными дверями, подсветкой и доводчиками, идеален для спальни.</div>
-            </article>
-          </a>
-
-          <a class="product-link" href="product-wardrobe-3.html" aria-label="Шкаф Compact">
-            <article class="product-card" role="article" tabindex="0" data-id="wardrobe-3">
-              <img src="./img/wardrobe3.png" alt="Шкаф Compact" class="product-img">
-              <div class="title">Шкаф Compact</div>
-              <div class="price">13 250 ₽</div>
-              <div class="desc">Бюджетный шкаф: ЛДСП, вариации цвета, быстрое решение для гостиной или детской.</div>
-            </article>
-          </a>
-        </div>
-
-        <h2 id="beds">Кровати</h2>
-        <div class="products-grid" aria-labelledby="beds">
-          <a class="product-link" href="product-bed-1.html" aria-label="Кровать Serenity">
-            <article class="product-card" role="article" tabindex="0" data-id="bed-1">
-              <img src="./img/bed1.png" alt="Кровать Serenity" class="product-img">
-              <div class="title">Кровать Serenity</div>
-              <div class="price">9 876 ₽</div>
-              <div class="desc">Односпальная: ортопедическое основание на ламелях, усиленный каркас, лёгкая сборка.</div>
-            </article>
-          </a>
-
-          <a class="product-link" href="product-bed-2.html" aria-label="Кровать Royal">
-            <article class="product-card" role="article" tabindex="0" data-id="bed-2">
-              <img src="./img/bed2.png" alt="Кровать Royal" class="product-img">
-              <div class="title">Кровать Royal</div>
-              <div class="price">25 900 ₽</div>
-              <div class="desc">Двуспальная кровать: массив + текстиль, ящик для белья, стильное изголовье.</div>
-            </article>
-          </a>
-
-          <a class="product-link" href="product-bed-3.html" aria-label="Кровать Cozy">
-            <article class="product-card" role="article" tabindex="0" data-id="bed-3">
-              <img src="./img/bed3.png" alt="Кровать Cozy" class="product-img">
-              <div class="title">Кровать Cozy</div>
-              <div class="price">14 950 ₽</div>
-              <div class="desc">Кровать Cozy: современный дизайн, сборка за 30 минут, подходит для небольших квартир.</div>
-            </article>
-          </a>
-        </div>
-
-      </main>
+      <div class="controls" id="authControls">
+        <!-- JS заполнит -->
+      </div>
     </div>
 
-    <footer>
-      <p>@ <span id="year">2025</span> Все права защищены</p>
-    </footer>
+    <nav class="mobile-nav" id="mobileNav" aria-label="Мобильная навигация">
+      <button class="nav-btn" data-page="home">Главная</button>
+      <button class="nav-btn" data-page="catalog">Каталог</button>
+      <button class="nav-btn" data-page="contacts">Контакты</button>
+      <button class="nav-btn" data-page="profile">Профиль</button>
+    </nav>
   </div>
+</header>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+<main class="container catalog-container">
+  <div id="content">
+    <div class="catalog-header">
+      <h1 class="catalog-title">Каталог мебели</h1>
+      
+      <div class="catalog-tabs">
+        <button class="tab active" data-category="all">Все товары</button>
+        <button class="tab" data-category="sofas">Диваны</button>
+        <button class="tab" data-category="wardrobes">Шкафы</button>
+        <button class="tab" data-category="beds">Кровати</button>
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      <!-- Товары будут загружены через JavaScript -->
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div>
+      <strong>Мебельный Дом</strong><br/>
+      <span class="small">© 2025 — Все права защищены</span>
+    </div>
+    <div class="small">Контакты: info@example.com • +7 (900) 000-00-00</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const inlineNav = document.querySelectorAll('.nav-inline .nav-btn');
+  const mobileNav = document.querySelectorAll('.mobile-nav .nav-btn');
+  const allNavBtns = [...inlineNav, ...mobileNav];
+  const authControls = document.getElementById('authControls');
+  const content = document.getElementById('content');
+  const productsGrid = document.getElementById('productsGrid');
+  const tabs = document.querySelectorAll('.tab');
+
+  let state = {
+    currentPage: 'catalog',
+    isAuthenticated: false,
+    userData: null,
+    currentCategory: 'all'
+  };
+
+  // Данные товаров
+  const products = [
+    {
+      id: 1,
+      name: "Диван Aurora",
+      price: "89 900 ₽",
+      description: "Элегантный диван с высокой спинкой и удобными подлокотниками. Обивка из качественной ткани, наполнитель ППУ высокой плотности. Идеально подходит для гостиной.",
+      category: "sofas",
+      image: "./img/sofa1.png"
+    },
+    {
+      id: 2,
+      name: "Диван Luna",
+      price: "124 500 ₽",
+      description: "Роскошный диван премиум-класса с механизмом трансформации. Обивка из итальянской натуральной кожи, ортопедическое основание. Комплектуется декоративными подушками.",
+      category: "sofas",
+      image: "./img/sofa2.png"
+    },
+    {
+      id: 3,
+      name: "Диван Cosmo",
+      price: "76 300 ₽",
+      description: "Стильный трехместный диван в современном стиле. Яркая синяя обивка из велюра, хромированные ножки. Компактный размер идеален для небольших помещений.",
+      category: "sofas",
+      image: "./img/sofa3.png"
+    },
+    {
+      id: 4,
+      name: "Шкаф-купе Milano",
+      price: "45 200 ₽",
+      description: "Вместительный шкаф-купе с зеркальными дверями. Внутренняя организация включает полки, штанги для вешалок и выдвижные ящики.",
+      category: "wardrobes",
+      image: "./img/wardrobe1.png"
+    },
+    {
+      id: 5,
+      name: "Кровать Valencia",
+      price: "68 700 ₽",
+      description: "Кровать двуспальная с ортопедическим основанием и большой выдвижной системой хранения. Изголовье обтянуто мягкой тканью.",
+      category: "beds",
+      image: "./img/bed1.png"
+    },
+    {
+      id: 6,
+      name: "Кровать Oslo",
+      price: "52 400 ₽",
+      description: "Минималистичная кровать из натурального дерева. Прочная конструкция, экологичные материалы, лаконичный дизайн.",
+      category: "beds",
+      image: "./img/bed2.png"
+    },
+    {
+      id: 7,
+      name: "Кровать Royal",
+      price: "79 000 ₽",
+      description: "Роскошная кровать с изголовьем, обитым бархатом. В комплекте ортопедическое основание и матрас средней жесткости.",
+      category: "beds",
+      image: "./img/bed3.png"
+    },
+    {
+      id: 8,
+      name: "Шкаф Classic",
+      price: "39 500 ₽",
+      description: "Классический шкаф из массива дерева с резными элементами. Внутри полки и штанги для одежды.",
+      category: "wardrobes",
+      image: "./img/wardrobe2.png"
+    },
+    {
+      id: 9,
+      name: "Шкаф Modern",
+      price: "48 300 ₽",
+      description: "Современный шкаф с глянцевыми фасадами и встроенной подсветкой. Идеален для стильных интерьеров.",
+      category: "wardrobes",
+      image: "./img/wardrobe3.png"
+    }
+  ];
+
+  function renderAuth(){
+    authControls.innerHTML = '';
+    if(state.isAuthenticated){
+      const name = document.createElement('span');
+      name.className = 'username';
+      name.textContent = state.userData?.name || 'Пользователь';
+      name.style.color = 'var(--brand-red)';
+      name.style.fontWeight = '600';
+      name.style.marginRight = '8px';
+
+      const btn = document.createElement('button');
+      btn.className = 'auth-ghost';
+      btn.textContent = 'Выйти';
+      btn.addEventListener('click', () => {
+        state.isAuthenticated = false;
+        state.userData = null;
+        renderAuth();
+      });
+
+      authControls.appendChild(name);
+      authControls.appendChild(btn);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'auth-ghost';
+      btn.textContent = 'Войти';
+      btn.addEventListener('click', () => {
+        // Логика входа
+      });
+      authControls.appendChild(btn);
+    }
+  }
+
+  function renderProducts() {
+    productsGrid.innerHTML = '';
+    
+    const filteredProducts = state.currentCategory === 'all' 
+      ? products 
+      : products.filter(product => product.category === state.currentCategory);
+    
+    filteredProducts.forEach(product => {
+      const productCard = document.createElement('div');
+      productCard.className = 'product-card';
+      
+      productCard.innerHTML = `
+        <div class="product-image">
+          ${product.image ? `<img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;">` : 'Изображение товара'}
+        </div>
+        <div class="product-content">
+          <h3 class="product-title">${product.name}</h3>
+          <div class="product-price">${product.price}</div>
+          <p class="product-description">${product.description}</p>
+          <button class="product-more">Подробнее</button>
+        </div>
+      `;
+      
+      productsGrid.appendChild(productCard);
+    });
+  }
+
+  function setPage(page){
+    state.currentPage = page;
+    allNavBtns.forEach(b => {
+      if(b.dataset.page === page){
+        b.setAttribute('aria-current','page');
+      } else {
+        b.removeAttribute('aria-current');
+      }
+    });
+    
+    if (page === 'catalog') {
+      renderProducts();
+    }
+    
+    content.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function setCategory(category) {
+    state.currentCategory = category;
+    
+    // Обновляем активную вкладку
+    tabs.forEach(tab => {
+      if (tab.dataset.category === category) {
+        tab.classList.add('active');
+      } else {
+        tab.classList.remove('active');
+      }
+    });
+    
+    renderProducts();
+  }
+
+  // Навигация
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.nav-btn');
+    if(btn) {
+      const page = btn.dataset.page;
+      if(page) setPage(page);
+    }
+    
+    const tab = e.target.closest('.tab');
+    if(tab) {
+      const category = tab.dataset.category;
+      if(category) setCategory(category);
+    }
+  });
+
+  // Логотип click -> home
+  document.getElementById('brand').addEventListener('click', () => setPage('home'));
+  document.getElementById('brand').addEventListener('keydown', (e) => { if(e.key==='Enter') setPage('home'); });
+
+  // Инициализация
+  renderAuth();
+  setPage(state.currentPage);
+  setCategory(state.currentCategory);
+
+  // Экспорт
+  window.appHeader = { state, setPage, renderAuth };
+})();
+</script>
 </body>
 </html>
