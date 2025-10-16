@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Header — исправленный</title>
+<title>Мебельный магазин</title>
 <style>
   :root{
     --brand-red: #d0181e;
-    --brand-red-rgb: 208, 24, 30; /* важно: RGB без alpha для rgba(...) */
+    --brand-red-rgb: 208, 24, 30;
     --brand-blue: #60a5fa;
     --bg: #ffffff;
     --text: #111827;
@@ -20,10 +20,10 @@
   body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--text); background:#f3f6f9;}
   .container{max-width:var(--container-max);margin:0 auto;padding:0 50px;}
 
-  /* header */
+
   header.site-header{
     position:sticky;top:0;z-index:60;
-    background: white;         /* белый фон шапки, как ты хотел */
+    background: white;
     color:var(--text);
     box-shadow:0 6px 18px rgba(2,6,23,0.06);
     padding:8px 0;
@@ -45,61 +45,64 @@
   .brand img{height:52px; display:block}
   .brand .title{font-weight:700; font-size:18px; color:var(--brand-red); letter-spacing:0.2px}
 
-  /* inline nav (рядом с логотипом) */
   .nav-inline{
     display:flex;
-    gap:10px;                 /* небольшой отступ между кнопками */
+    gap:10px;
     align-items:center;
   }
   .nav-btn{
     padding:10px 14px;
     border-radius:8px;
     border:0;
-    color:var(--brand-red);      /* текст красный по умолчанию */
-    margin-left: 20px;           /* подвинул немножко влево, можно менять */
+    color:var(--brand-red);
+    margin-left: 20px;
     font-weight:600;
     cursor:pointer;
-    background: transparent;     /* по умолчанию без фона */
+    background: transparent;
     transition: transform .12s ease, filter .12s ease, background-color .12s ease, box-shadow .18s ease;
+    text-decoration: none; 
+    display: inline-block;
   }
 
-  
-
-  /* при hover показываем полупрозрачный фон (тот же красный, но прозрачный) */
   .nav-btn:hover,
   .nav-btn:focus {
-    background: rgba(var(--brand-red-rgb), 0.10); /* фон появится при наведении */
+    background: rgba(var(--brand-red-rgb), 0.10);
     transform: translateY(-2px);
     filter: none;
     color:var(--brand-red);
+    text-decoration: none; 
   }
 
-  /* активная страница — более заметная подсветка и тень (цветной glow) */
   .nav-btn[aria-current="page"]{
     background: red;
     color: #fff;
     box-shadow:
-      0 6px 18px rgba(var(--brand-red-rgb), 0.28),  /* основная цветная тень */
-      0 0 40px rgba(var(--brand-red-rgb), 0.18);    /* мягкое свечение вокруг */
+      0 6px 18px rgba(var(--brand-red-rgb), 0.28),
+      0 0 40px rgba(var(--brand-red-rgb), 0.18);
     transform: translateY(-2px);
+    text-decoration: none;
   }
 
-  /* правый блок с auth */
   .controls{display:flex;align-items:center;gap:12px}
 
   .auth-ghost{
     padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--brand-red);font-weight:600;cursor:pointer;
     transition: background-color .12s ease, color .12s ease, transform .08s;
+    text-decoration: none; 
   }
-  .auth-ghost:hover{ background: rgba(var(--brand-red-rgb), 0.08); color: #fff; transform: translateY(-1px); }
+  .auth-ghost:hover{ 
+    background: rgba(var(--brand-red-rgb), 0.08); 
+    color: #fff; 
+    transform: translateY(-1px); 
+    text-decoration: none; 
+  }
 
-  /* мобильная навигация (вертикальная) */
   .mobile-nav{
     display:none;
     margin-top:10px;
     gap:8px;
     flex-direction:column;
-    margin-left: -8px; /* сдвиг влево, как просил */
+    margin-left: -8px;
   }
   .mobile-nav .nav-btn{
     width:100%;
@@ -108,119 +111,294 @@
     color:var(--brand-red);
     padding:10px 12px;
     border-radius:8px;
+    text-decoration: none;
   }
-  .mobile-nav .nav-btn:hover{ background: rgba(var(--brand-red-rgb), 0.10); transform: translateY(-1px); }
+  .mobile-nav .nav-btn:hover{ 
+    background: rgba(var(--brand-red-rgb), 0.10); 
+    transform: translateY(-1px); 
+    text-decoration: none; 
+  }
 
-  /* ---------- About / Features block ---------- */
-.about-row{
-  display:flex;
-  gap:28px;
-  align-items:flex-start;
-  margin-top:28px;
-  margin-bottom:28px;
-  margin-left: 28px;;
-}
-.about-text{
-  flex:1 1 60%;
-  color: #334155;
-  line-height:1.6;
-}
-.about-text h3{
-  margin:0 0 12px;
-  font-size:20px;
-  color:var(--brand-red);
-  font-weight:700;
-}
-.about-card{
-  flex:1 1 40%;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-}
-.about-image{
-  width:100%;
-  max-width:540px;
-  border-radius:14px;
-  box-shadow:0 10px 30px rgba(2,6,23,0.06);
-  overflow:hidden;
-  background: #fff;
-}
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
 
-/* features grid */
-.features{
-  margin-top:28px;
-  background: #fff;
-  border-radius:14px;
-  padding:28px;
-  box-shadow:0 6px 18px rgba(2,6,23,0.04);
-}
-.features .lead{
-  color:#374151;
-  margin-bottom:18px;
-}
-.features-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:18px;
-  margin-top:12px;
-}
+  .modal {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
 
-/* single feature card */
-.feature{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-  padding:18px;
-  border-radius:12px;
-  min-height:110px;
-  box-shadow:0 6px 20px rgba(2,6,23,0.03);
-  overflow:hidden;
-}
+  .modal-header {
+    display: flex;
+    border-bottom: 1px solid #e2e8f0;
+  }
 
-/* circle icon */
-.feature .icon{
-  width:44px;
-  height:44px;
-  border-radius:999px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-weight:700;
-  flex:0 0 44px;
-  box-shadow:0 6px 18px rgba(2,6,23,0.06);
-}
+  .modal-tab {
+    flex: 1;
+    padding: 16px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
 
-/* text */
-.feature .f-body{display:flex;flex-direction:column}
-.feature .f-title{font-weight:700;color:#0f172a;margin-bottom:6px}
-.feature .f-desc{color:#475569;font-size:14px;line-height:1.45}
+  .modal-tab.active {
+    color: var(--brand-red);
+    border-bottom: 2px solid var(--brand-red);
+  }
 
-/* gradients for cards (example) */
-.g-blue{ background: linear-gradient(135deg,#e6f0ff 0%, #f7fbff 100%); }
-.g-purple{ background: linear-gradient(135deg,#f7e9ff 0%, #fbf8ff 100%); }
-.g-green{ background: linear-gradient(135deg,#eafaf0 0%, #fbfffb 100%); }
+  .modal-tab:not(.active) {
+    color: var(--muted);
+  }
 
-/* icon backgrounds */
-.ic-blue{ background:#2563eb; }   /* blue */
-.ic-purple{ background:#7c3aed; } /* purple */
-.ic-green{ background:#059669; }  /* green */
+  .modal-content {
+    padding: 30px;
+  }
 
-/* responsive */
-@media (max-width:980px){
-  .about-row{flex-direction:column}
-  .about-card{justify-content:center}
-  .features-grid{grid-template-columns:repeat(2,1fr)}
-  .container{padding-left:20px;padding-right:20px;}
-}
-@media (max-width:600px){
-  .features-grid{grid-template-columns:1fr}
-}
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--brand-red);
+    box-shadow: 0 0 0 3px rgba(var(--brand-red-rgb), 0.1);
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .checkbox {
+    margin-top: 3px;
+  }
+
+  .checkbox-label {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .checkbox-label a {
+    color: var(--brand-red);
+    text-decoration: none;
+  }
+
+  .checkbox-label a:hover {
+    text-decoration: underline;
+  }
+
+  .form-submit {
+    background: var(--brand-red);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .form-submit:hover {
+    background: #b3151a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--brand-red-rgb), 0.3);
+  }
 
 
-  /* footer белый bg */
+  .about-row{
+    display:flex;
+    gap:28px;
+    align-items:flex-start;
+    margin-top:28px;
+    margin-bottom:28px;
+    margin-left: 28px;;
+  }
+  .about-text{
+    flex:1 1 60%;
+    color: #334155;
+    line-height:1.6;
+  }
+  .about-text h3{
+    margin:0 0 12px;
+    font-size:20px;
+    color:var(--brand-red);
+    font-weight:700;
+  }
+  .about-card{
+    flex:1 1 40%;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+  }
+  .about-image{
+    width:100%;
+    max-width:540px;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(2,6,23,0.06);
+    overflow:hidden;
+    background: #fff;
+  }
+
+
+  .features{
+    margin-top:28px;
+    background: #fff;
+    border-radius:14px;
+    padding:28px;
+    box-shadow:0 6px 18px rgba(2,6,23,0.04);
+  }
+  .features .lead{
+    color:#374151;
+    margin-bottom:18px;
+  }
+  .features-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    margin-top:12px;
+  }
+
+  .feature{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    padding:18px;
+    border-radius:12px;
+    min-height:110px;
+    box-shadow:0 6px 20px rgba(2,6,23,0.03);
+    overflow:hidden;
+  }
+
+  .feature .icon{
+    width:44px;
+    height:44px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-weight:700;
+    flex:0 0 44px;
+    box-shadow:0 6px 18px rgba(2,6,23,0.06);
+  }
+
+  .feature .f-body{display:flex;flex-direction:column}
+  .feature .f-title{font-weight:700;color:#0f172a;margin-bottom:6px}
+  .feature .f-desc{color:#475569;font-size:14px;line-height:1.45}
+
+  .g-blue{ background: linear-gradient(135deg,#e6f0ff 0%, #f7fbff 100%); }
+  .g-purple{ background: linear-gradient(135deg,#f7e9ff 0%, #fbf8ff 100%); }
+  .g-green{ background: linear-gradient(135deg,#eafaf0 0%, #fbfffb 100%); }
+
+  .ic-blue{ background:#2563eb; }
+  .ic-purple{ background:#7c3aed; }
+  .ic-green{ background:#059669; }
+
+  .team-section{
+    margin-top:40px;
+    background:#0f172a;
+    border-radius:20px;
+    padding:36px 28px;
+    color:#e2e8f0;
+    box-shadow:0 10px 30px rgba(0,0,0,0.12);
+  }
+  .team-section h3{
+    margin:0 0 10px;
+    color:#60a5fa;
+    font-size:18px;
+  }
+  .team-section p.lead{
+    margin:0 0 28px;
+    color:#cbd5e1;
+  }
+
+  .team-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+  }
+
+  .team-card{
+    background:rgba(255,255,255,0.06);
+    border-radius:12px;
+    padding:16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.15);
+    transition:transform .15s ease, box-shadow .2s ease;
+  }
+  .team-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+
+  .team-card img{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    object-fit:cover;
+    flex-shrink:0;
+    border:2px solid rgba(255,255,255,0.15);
+  }
+
+  .team-info{
+    display:flex;
+    flex-direction:column;
+  }
+  .team-name{
+    font-weight:700;
+    color:#f8fafc;
+    margin-bottom:4px;
+  }
+  .team-role{
+    color:#cbd5e1;
+    font-size:14px;
+  }
+
+  /* footer */
   footer.site-footer{
-    background: #ffffff; /* белый фон */
+    background: #ffffff;
     color: #0f172a;
     padding:20px 0;
     border-top:1px solid #e6e9ee;
@@ -229,91 +407,32 @@
   footer .small{font-size:14px;color:#374151}
 
   /* адаптив */
+  @media (max-width:980px){
+    .about-row{flex-direction:column}
+    .about-card{justify-content:center}
+    .features-grid{grid-template-columns:repeat(2,1fr)}
+    .container{padding-left:20px;padding-right:20px;}
+  }
+  @media (max-width:600px){
+    .features-grid{grid-template-columns:1fr}
+  }
+
+  @media (max-width:900px){
+    .team-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:600px){
+    .team-grid{grid-template-columns:1fr;}
+  }
+
   @media (max-width:800px){
-    .nav-inline{display:none}       /* прячем inline-кнопки на мобильных */
-    .mobile-nav{display:flex}       /* показываем вертикальную навигацию */
+    .nav-inline{display:none}
+    .mobile-nav{display:flex}
     .brand img{height:44px}
     .brand .title{display:none}
     .top-row{align-items:flex-start}
   }
 
-  /* фокус/доступность */
   .nav-btn:focus,.auth-ghost:focus{outline:3px solid rgba(59,130,246,0.14); outline-offset:2px}
-
-  /* ===== Team section ===== */
-.team-section{
-  margin-top:40px;
-  background:#0f172a;
-  border-radius:20px;
-  padding:36px 28px;
-  color:#e2e8f0;
-  box-shadow:0 10px 30px rgba(0,0,0,0.12);
-}
-.team-section h3{
-  margin:0 0 10px;
-  color:#60a5fa; /* голубой акцент */
-  font-size:18px;
-}
-.team-section p.lead{
-  margin:0 0 28px;
-  color:#cbd5e1;
-}
-
-.team-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:22px;
-}
-
-.team-card{
-  background:rgba(255,255,255,0.06);
-  border-radius:12px;
-  padding:16px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.15);
-  transition:transform .15s ease, box-shadow .2s ease;
-}
-.team-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 8px 24px rgba(0,0,0,0.25);
-}
-
-/* фото */
-.team-card img{
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  object-fit:cover;
-  flex-shrink:0;
-  border:2px solid rgba(255,255,255,0.15);
-}
-
-/* текст внутри карточки */
-.team-info{
-  display:flex;
-  flex-direction:column;
-}
-.team-name{
-  font-weight:700;
-  color:#f8fafc;
-  margin-bottom:4px;
-}
-.team-role{
-  color:#cbd5e1;
-  font-size:14px;
-}
-
-/* адаптив */
-@media (max-width:900px){
-  .team-grid{grid-template-columns:repeat(2,1fr);}
-}
-@media (max-width:600px){
-  .team-grid{grid-template-columns:1fr;}
-}
-
-
 </style>
 </head>
 <body>
@@ -321,7 +440,6 @@
 <header class="site-header" role="banner">
   <div class="container">
     <div class="top-row">
-      <!-- слева: логотип + inline навигация (на больших экранах) -->
       <div style="display:flex;align-items:center;gap:18px;min-width:0;">
         <div class="brand" id="brand" tabindex="0" title="Перейти на главную">
           <img src="./img/logo.png" alt="Логотип — Мебельный Дом" id="logo" />
@@ -336,21 +454,81 @@
         </nav>
       </div>
 
-      <!-- справа: auth -->
       <div class="controls" id="authControls">
-        <!-- JS заполнит -->
       </div>
     </div>
 
-    <!-- мобильная навигация -->
     <nav class="mobile-nav" id="mobileNav" aria-label="Мобильная навигация">
-      <button class="nav-btn" data-page="home">Главная</button>
-      <button class="nav-btn" data-page="catalog">Каталог</button>
-      <button class="nav-btn" data-page="contacts">Контакты</button>
-      <button class="nav-btn" data-page="profile">Профиль</button>
+      <a href="index.html" class="nav-btn" data-page="home">Главная</a>
+      <a href="catalog.html" class="nav-btn" data-page="catalog">Каталог</a>
+      <a href="contacts.html" class="nav-btn" data-page="contacts">Контакты</a>
+      <a href="profile.html" class="nav-btn" data-page="profile">Профиль</a>
     </nav>
   </div>
 </header>
+
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-header">
+      <button class="modal-tab active" data-tab="login">Вход</button>
+      <button class="modal-tab" data-tab="register">Регистрация</button>
+    </div>
+    
+    <div class="modal-content">
+      <form id="loginForm" style="display: block;">
+        <div class="form-group">
+          <label for="loginEmail" class="form-label">Email</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="example@mail.ru" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="loginPassword" class="form-label">Пароль</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="Введите пароль" required>
+        </div>
+        
+        <button type="submit" class="form-submit">Войти</button>
+      </form>
+      
+      <form id="registerForm" style="display: none;">
+        <div class="form-group">
+          <label for="registerName" class="form-label">ФИО</label>
+          <input type="text" id="registerName" class="form-input" placeholder="Иван Иванов" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerEmail" class="form-label">Email</label>
+          <input type="email" id="registerEmail" class="form-input" placeholder="example@mail.ru" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerPassword" class="form-label">Пароль</label>
+          <input type="password" id="registerPassword" class="form-input" placeholder="Придумайте пароль" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerConfirmPassword" class="form-label">Подтвердите пароль</label>
+          <input type="password" id="registerConfirmPassword" class="form-input" placeholder="Повторите пароль" required>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="privacyPolicy" class="checkbox" required>
+          <label for="privacyPolicy" class="checkbox-label">
+            Я соглашаюсь с <a href="#">политикой конфиденциальности</a> и даю согласие на обработку персональных данных
+          </label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="dataStorage" class="checkbox" required>
+          <label for="dataStorage" class="checkbox-label">
+            Я соглашаюсь на хранение и обработку моих персональных данных
+          </label>
+        </div>
+        
+        <button type="submit" class="form-submit">Зарегистрироваться</button>
+      </form>
+    </div>
+  </div>
+</div>
 
 <main class="container" style="padding:34px 18px;">
   <div id="content" style="margin-top:12px;padding:18px;background:white;border-radius:10px;box-shadow:0 6px 16px rgba(2,6,23,0.06);min-height:120px;">
@@ -365,7 +543,6 @@
 
             <div class="about-card">
             <div class="about-image">
-                <!-- замените путь на ваш логотип / фото продукта -->
                 <img src="./img/divan.png" alt="Диван" style="display:block;width:100%;height:auto;object-fit:cover;">
             </div>
             </div>
@@ -440,7 +617,6 @@
   </div>
 </main>
 
-<!-- footer с белым фоном -->
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div>
@@ -451,7 +627,6 @@
   </div>
 </footer>
 
-
 <script>
 (function(){
   const inlineNav = document.querySelectorAll('.nav-inline .nav-btn');
@@ -460,6 +635,11 @@
   const authControls = document.getElementById('authControls');
   const content = document.getElementById('content');
   const currentLabel = document.getElementById('current');
+
+  const authModal = document.getElementById('authModal');
+  const modalTabs = document.querySelectorAll('.modal-tab');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
 
   let state = {
     currentPage: 'home',
@@ -473,7 +653,7 @@
       const name = document.createElement('span');
       name.className = 'username';
       name.textContent = state.userData?.name || 'Пользователь';
-      name.style.color = 'white';
+      name.style.color = 'var(--brand-red)';
       name.style.fontWeight = '600';
       name.style.marginRight = '8px';
 
@@ -481,22 +661,17 @@
       btn.className = 'auth-ghost';
       btn.textContent = 'Выйти';
       btn.addEventListener('click', () => {
-        state.isAuthenticated = false;
-        state.userData = null;
-        renderAuth();
+        logout();
       });
 
       authControls.appendChild(name);
       authControls.appendChild(btn);
     } else {
       const btn = document.createElement('button');
-      btn.className = 'nav-btn';
-      btn.style.background = 'whyte';
-      btn.style.color = "red";
-      btn.style.borderColor = "red"; 
+      btn.className = 'auth-ghost';
       btn.textContent = 'Войти';
       btn.addEventListener('click', () => {
-
+        openAuthModal();
       });
       authControls.appendChild(btn);
     }
@@ -504,7 +679,6 @@
 
   function setPage(page){
     state.currentPage = page;
-    // обновляем все кнопки (inline + mobile)
     allNavBtns.forEach(b => {
       if(b.dataset.page === page){
         b.setAttribute('aria-current','page');
@@ -518,7 +692,115 @@
     content.scrollIntoView({behavior:'smooth', block:'start'});
   }
 
-  // навигация (делегирование по всему документу — работает для обеих групп кнопок)
+  function openAuthModal() {
+    authModal.style.display = 'flex';
+    loginForm.reset();
+    registerForm.reset();
+    switchTab('login');
+  }
+
+  function closeAuthModal() {
+    authModal.style.display = 'none';
+  }
+
+  function switchTab(tabName) {
+    modalTabs.forEach(tab => {
+      if (tab.dataset.tab === tabName) {
+        tab.classList.add('active');
+      } else {
+        tab.classList.remove('active');
+      }
+    });
+    
+    if (tabName === 'login') {
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
+    } else {
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'block';
+    }
+  }
+
+  function login(userData) {
+    state.isAuthenticated = true;
+    state.userData = userData;
+    localStorage.setItem('mebeldom_auth', JSON.stringify(userData));
+    renderAuth();
+    closeAuthModal();
+  }
+
+  function logout() {
+    state.isAuthenticated = false;
+    state.userData = null;
+    localStorage.removeItem('mebeldom_auth');
+    renderAuth();
+  }
+
+  modalTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      switchTab(tab.dataset.tab);
+    });
+  });
+
+  authModal.addEventListener('click', (e) => {
+    if (e.target === authModal) {
+      closeAuthModal();
+    }
+  });
+
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (email && password) {
+      const userData = {
+        name: email.split('@')[0],
+        email: email
+      };
+      
+      login(userData);
+      alert('Вы успешно вошли в систему!');
+    } else {
+      alert('Пожалуйста, заполните все поля');
+    }
+  });
+
+  registerForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    const privacyPolicy = document.getElementById('privacyPolicy').checked;
+    const dataStorage = document.getElementById('dataStorage').checked;
+    
+    if (!name || !email || !password || !confirmPassword) {
+      alert('Пожалуйста, заполните все поля');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      alert('Пароли не совпадают');
+      return;
+    }
+    
+    if (!privacyPolicy || !dataStorage) {
+      alert('Необходимо согласие со всеми условиями');
+      return;
+    }
+    
+    const userData = {
+      name: name,
+      email: email
+    };
+    
+    login(userData);
+    alert('Регистрация прошла успешно! Вы вошли в систему.');
+  });
+
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.nav-btn');
     if(!btn) return;
@@ -526,12 +808,20 @@
     if(page) setPage(page);
   });
 
-  // логотип click -> home
   document.getElementById('brand').addEventListener('click', () => setPage('home'));
   document.getElementById('brand').addEventListener('keydown', (e) => { if(e.key==='Enter') setPage('home'); });
 
+  function checkAuth() {
+    const savedAuth = localStorage.getItem('mebeldom_auth');
+    if (savedAuth) {
+      state.isAuthenticated = true;
+      state.userData = JSON.parse(savedAuth);
+    }
+    renderAuth();
+  }
+
   // init
-  renderAuth();
+  checkAuth();
   setPage(state.currentPage);
 
   // export

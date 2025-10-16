@@ -109,6 +109,136 @@
   }
   .mobile-nav .nav-btn:hover{ background: rgba(var(--brand-red-rgb), 0.10); transform: translateY(-1px); }
 
+  /* Модальное окно авторизации */
+  .auth-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+
+  .auth-modal-overlay.active {
+    display: flex;
+  }
+
+  .auth-modal {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .auth-modal-header {
+    display: flex;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .auth-modal-tab {
+    flex: 1;
+    padding: 16px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .auth-modal-tab.active {
+    color: var(--brand-red);
+    border-bottom: 2px solid var(--brand-red);
+  }
+
+  .auth-modal-tab:not(.active) {
+    color: var(--muted);
+  }
+
+  .auth-modal-content {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--brand-red);
+    box-shadow: 0 0 0 3px rgba(var(--brand-red-rgb), 0.1);
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .checkbox {
+    margin-top: 3px;
+  }
+
+  .checkbox-label {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .checkbox-label a {
+    color: var(--brand-red);
+    text-decoration: none;
+  }
+
+  .checkbox-label a:hover {
+    text-decoration: underline;
+  }
+
+  .form-submit {
+    background: var(--brand-red);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .form-submit:hover {
+    background: #b3151a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--brand-red-rgb), 0.3);
+  }
+
   /* Контакты стили */
   .contacts-container {
     padding: 40px 0;
@@ -194,38 +324,6 @@
     line-height: 1.5;
   }
 
-  .form-group {
-    margin-bottom: 20px;
-  }
-
-  .form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .form-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .form-input:focus {
-    outline: none;
-    border-color: var(--brand-red);
-    box-shadow: 0 0 0 3px rgba(var(--brand-red-rgb), 0.1);
-  }
-
-  .form-textarea {
-    resize: vertical;
-    min-height: 120px;
-    font-family: inherit;
-  }
-
   .submit-btn {
     background: var(--brand-red);
     color: white;
@@ -245,12 +343,37 @@
     box-shadow: 0 4px 12px rgba(var(--brand-red-rgb), 0.3);
   }
 
+  /* Яндекс карта */
+  .map-section {
+    margin: 50px 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .map-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+    text-align: center;
+    padding: 20px 20px 0;
+  }
+
+  .map-container {
+    width: 100%;
+    height: 400px;
+  }
+
+  /* Социальные сети */
   .social-section {
     text-align: center;
     padding: 30px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 30px;
   }
 
   .social-title {
@@ -318,6 +441,14 @@
     .social-links {
       flex-wrap: wrap;
     }
+    
+    .map-container {
+      height: 300px;
+    }
+    
+    .auth-modal-content {
+      padding: 20px;
+    }
   }
 
   /* фокус/доступность */
@@ -356,6 +487,72 @@
     </nav>
   </div>
 </header>
+
+<!-- Модальное окно авторизации -->
+<div class="auth-modal-overlay" id="authModal">
+  <div class="auth-modal">
+    <div class="auth-modal-header">
+      <button class="auth-modal-tab active" data-tab="login">Вход</button>
+      <button class="auth-modal-tab" data-tab="register">Регистрация</button>
+    </div>
+    
+    <div class="auth-modal-content">
+      <!-- Форма входа -->
+      <form id="loginForm" style="display: block;">
+        <div class="form-group">
+          <label for="loginEmail" class="form-label">Email</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="example@mail.ru" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="loginPassword" class="form-label">Пароль</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="Введите пароль" required>
+        </div>
+        
+        <button type="submit" class="form-submit">Войти</button>
+      </form>
+      
+      <!-- Форма регистрации -->
+      <form id="registerForm" style="display: none;">
+        <div class="form-group">
+          <label for="registerName" class="form-label">ФИО</label>
+          <input type="text" id="registerName" class="form-input" placeholder="Иван Иванов" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerEmail" class="form-label">Email</label>
+          <input type="email" id="registerEmail" class="form-input" placeholder="example@mail.ru" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerPassword" class="form-label">Пароль</label>
+          <input type="password" id="registerPassword" class="form-input" placeholder="Придумайте пароль" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerConfirmPassword" class="form-label">Подтвердите пароль</label>
+          <input type="password" id="registerConfirmPassword" class="form-input" placeholder="Повторите пароль" required>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="privacyPolicy" class="checkbox" required>
+          <label for="privacyPolicy" class="checkbox-label">
+            Я соглашаюсь с <a href="#">политикой конфиденциальности</a> и даю согласие на обработку персональных данных
+          </label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="dataStorage" class="checkbox" required>
+          <label for="dataStorage" class="checkbox-label">
+            Я соглашаюсь на хранение и обработку моих персональных данных
+          </label>
+        </div>
+        
+        <button type="submit" class="form-submit">Зарегистрироваться</button>
+      </form>
+    </div>
+  </div>
+</div>
 
 <main class="container contacts-container">
   <div id="content">
@@ -430,6 +627,12 @@
       </div>
     </div>
 
+    <!-- Яндекс карта -->
+    <div class="map-section">
+      <h3 class="map-title">Мы на карте</h3>
+      <div id="map" class="map-container"></div>
+    </div>
+
     <!-- Социальные сети -->
     <div class="social-section">
       <h3 class="social-title">Социальные сети</h3>
@@ -454,15 +657,31 @@
   </div>
 </footer>
 
+<script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
+
 <script>
 (function(){
   const authControls = document.getElementById('authControls');
   const contactForm = document.getElementById('contactForm');
 
+  const authModal = document.getElementById('authModal');
+  const authModalTabs = document.querySelectorAll('.auth-modal-tab');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+
   let state = {
     isAuthenticated: false,
     userData: null
   };
+
+  function checkAuth() {
+    const savedAuth = localStorage.getItem('mebeldom_auth');
+    if (savedAuth) {
+      state.isAuthenticated = true;
+      state.userData = JSON.parse(savedAuth);
+    }
+    renderAuth();
+  }
 
   function renderAuth(){
     authControls.innerHTML = '';
@@ -478,9 +697,7 @@
       btn.className = 'auth-ghost';
       btn.textContent = 'Выйти';
       btn.addEventListener('click', () => {
-        state.isAuthenticated = false;
-        state.userData = null;
-        renderAuth();
+        logout();
       });
 
       authControls.appendChild(name);
@@ -490,16 +707,121 @@
       btn.className = 'auth-ghost';
       btn.textContent = 'Войти';
       btn.addEventListener('click', () => {
-        // Логика входа
-        state.isAuthenticated = true;
-        state.userData = { name: 'Иван Иванов' };
-        renderAuth();
+        openAuthModal();
       });
       authControls.appendChild(btn);
     }
   }
 
-  // Обработка формы
+  function openAuthModal() {
+    authModal.classList.add('active');
+    loginForm.reset();
+    registerForm.reset();
+    switchAuthTab('login');
+  }
+
+  function closeAuthModal() {
+    authModal.classList.remove('active');
+  }
+
+  function switchAuthTab(tabName) {
+    authModalTabs.forEach(tab => {
+      if (tab.dataset.tab === tabName) {
+        tab.classList.add('active');
+      } else {
+        tab.classList.remove('active');
+      }
+    });
+    
+    if (tabName === 'login') {
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
+    } else {
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'block';
+    }
+  }
+
+  function login(userData) {
+    state.isAuthenticated = true;
+    state.userData = userData;
+    localStorage.setItem('mebeldom_auth', JSON.stringify(userData));
+    renderAuth();
+    closeAuthModal();
+  }
+
+  function logout() {
+    state.isAuthenticated = false;
+    state.userData = null;
+    localStorage.removeItem('mebeldom_auth');
+    renderAuth();
+  }
+
+  authModalTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      switchAuthTab(tab.dataset.tab);
+    });
+  });
+
+  authModal.addEventListener('click', (e) => {
+    if (e.target === authModal) {
+      closeAuthModal();
+    }
+  });
+
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (email && password) {
+      const userData = {
+        name: email.split('@')[0],
+        email: email
+      };
+      
+      login(userData);
+      alert('Вы успешно вошли в систему!');
+    } else {
+      alert('Пожалуйста, заполните все поля');
+    }
+  });
+
+  registerForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    const privacyPolicy = document.getElementById('privacyPolicy').checked;
+    const dataStorage = document.getElementById('dataStorage').checked;
+    
+    if (!name || !email || !password || !confirmPassword) {
+      alert('Пожалуйста, заполните все поля');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      alert('Пароли не совпадают');
+      return;
+    }
+    
+    if (!privacyPolicy || !dataStorage) {
+      alert('Необходимо согласие со всеми условиями');
+      return;
+    }
+    
+    const userData = {
+      name: name,
+      email: email
+    };
+    
+    login(userData);
+    alert('Регистрация прошла успешно! Вы вошли в систему.');
+  });
+
   contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -510,17 +832,13 @@
       message: document.getElementById('message').value
     };
     
-    // Здесь можно отправить данные на сервер
     console.log('Форма отправлена:', formData);
     
-    // Показываем уведомление
     alert('Спасибо! Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.');
     
-    // Очищаем форму
     contactForm.reset();
   });
 
-  // Маска для телефона
   const phoneInput = document.getElementById('phone');
   phoneInput.addEventListener('input', function(e) {
     let value = e.target.value.replace(/\D/g, '');
@@ -545,8 +863,47 @@
     e.target.value = formattedValue;
   });
 
-  // Инициализация
-  renderAuth();
+  function initMap() {
+    const addressCoords = [55.5411, 37.5205]; 
+    
+    ymaps.ready(function() {
+      const map = new ymaps.Map('map', {
+        center: addressCoords,
+        zoom: 15,
+        controls: ['zoomControl', 'fullscreenControl']
+      });
+
+
+      const placemark = new ymaps.Placemark(addressCoords, {
+        balloonContent: `
+          <strong>Мебельный Дом</strong><br/>
+          г. Москва, Бутово, ул. Адмирала Лазарева, д. 63<br/>
+          Телефон: +7 (495) 123-45-67
+        `,
+        hintContent: 'Мебельный Дом'
+      }, {
+        preset: 'islands#redIcon'
+      });
+
+      map.geoObjects.add(placemark);
+
+      // Открываем балун при загрузке
+      placemark.balloon.open();
+    });
+  }
+  if (typeof ymaps !== 'undefined') {
+    initMap();
+  } else {
+    window.addEventListener('load', initMap);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAuthModal();
+    }
+  });
+
+  checkAuth();
 })();
 </script>
 </body>
