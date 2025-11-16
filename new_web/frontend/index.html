@@ -613,6 +613,35 @@
             </div>
         </div>
         </section>
+        <!-- Добавляем в index.html после команды -->
+        <section class="reviews-section" aria-label="Отзывы клиентов">
+            <h3 style="text-align: center; margin-bottom: 20px;">Отзывы наших клиентов</h3>
+            
+            <div id="reviews-container" style="max-height: 400px; overflow-y: auto; padding: 20px;">
+                <!-- Отзывы будут загружаться здесь -->
+            </div>
+            
+            <div id="add-review-form" style="margin-top: 30px; display: none;">
+                <h4>Оставить отзыв</h4>
+                <form id="review-form">
+                    <div style="margin-bottom: 15px;">
+                        <label>Оценка:</label>
+                        <select id="review-rating" required>
+                            <option value="5">5 ★</option>
+                            <option value="4">4 ★</option>
+                            <option value="3">3 ★</option>
+                            <option value="2">2 ★</option>
+                            <option value="1">1 ★</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <textarea id="review-text" placeholder="Ваш отзыв..." 
+                                style="width: 100%; height: 100px; padding: 10px;" required></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Отправить отзыв</button>
+                </form>
+            </div>
+        </section>
     </section>
   </div>
 </main>
