@@ -37,77 +37,131 @@
   }
 
   .brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    cursor:pointer;
-  }
-  .brand img{height:52px; display:block}
-  .brand .title{font-weight:700; font-size:18px; color:var(--brand-red); letter-spacing:0.2px}
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  flex-shrink: 0;
+}
+.brand img{
+  height:44px;
+  display:block;
+  transition: transform 0.2s ease;
+}
+.brand:hover img{
+  transform: scale(1.05);
+}
+.brand .title{
+  font-weight:700;
+  font-size:16px;
+  color:var(--brand-red);
+  letter-spacing:0.1px;
+  white-space: nowrap;
+}
 
-  /* inline nav */
-  .nav-inline{
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
-  .nav-btn{
-    padding:10px 14px;
-    border-radius:8px;
-    border:0;
-    color:var(--brand-red);
-    margin-left: 20px;
-    font-weight:600;
-    cursor:pointer;
-    background: transparent;
-    transition: transform .12s ease, filter .12s ease, background-color .12s ease, box-shadow .18s ease;
-    text-decoration: none;
-    display: inline-block;
-  }
+/* Основная навигация */
+.nav-inline{
+  display:flex;
+  gap:4px;
+  align-items:center;
+  flex-wrap: nowrap;
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
+  margin: 0 16px;
+}
 
-  .nav-btn:hover,
-  .nav-btn:focus {
-    background: rgba(var(--brand-red-rgb), 0.10);
-    transform: translateY(-2px);
-    filter: none;
-    color:var(--brand-red);
-  }
+.nav-btn{
+  padding:8px 12px;
+  border-radius:8px;
+  border:0;
+  color:var(--brand-red);
+  margin-left: 8px;
+  font-weight:600;
+  font-size: 14px;
+  cursor:pointer;
+  background: transparent;
+  transition: all 0.2s ease;
+  text-decoration: none; 
+  display: inline-block;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
-  .nav-btn[aria-current="page"]{
-    background: red;
-    color: #fff;
-    box-shadow:
-      0 6px 18px rgba(var(--brand-red-rgb), 0.28),
-      0 0 40px rgba(var(--brand-red-rgb), 0.18);
-    transform: translateY(-2px);
-  }
+.nav-btn:hover,
+.nav-btn:focus {
+  background: rgba(var(--brand-red-rgb), 0.10);
+  transform: translateY(-1px);
+  color:var(--brand-red);
+}
 
-  /* правый блок с auth */
-  .controls{display:flex;align-items:center;gap:12px}
+.nav-btn[aria-current="page"]{
+  background: var(--brand-red);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(var(--brand-red-rgb), 0.25);
+  transform: translateY(-1px);
+}
 
-  .auth-ghost{
-    padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--brand-red);font-weight:600;cursor:pointer;
-    transition: background-color .12s ease, color .12s ease, transform .08s;
-  }
-  .auth-ghost:hover{ background: rgba(var(--brand-red-rgb), 0.08); color: #fff; transform: translateY(-1px); }
+/* Элементы авторизации */
+.controls{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink: 0;
+}
 
-  /* мобильная навигация */
-  .mobile-nav{
-    display:none;
-    margin-top:10px;
-    gap:8px;
-    flex-direction:column;
-    margin-left: -8px;
-  }
-  .mobile-nav .nav-btn{
-    width:100%;
-    text-align:center;
-    background: transparent;
-    color:var(--brand-red);
-    padding:10px 12px;
-    border-radius:8px;
-  }
-  .mobile-nav .nav-btn:hover{ background: rgba(var(--brand-red-rgb), 0.10); transform: translateY(-1px); }
+.auth-ghost{
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.06);
+  background:transparent;
+  color:var(--brand-red);
+  font-weight:600;
+  font-size: 14px;
+  cursor:pointer;
+  transition: all 0.2s ease;
+  text-decoration: none; 
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.auth-ghost:hover{ 
+  background: rgba(var(--brand-red-rgb), 0.08); 
+  color: var(--brand-red); 
+  transform: translateY(-1px); 
+}
+
+.username{
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand-red);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+  flex-shrink: 0;
+}
+
+/* Мобильная навигация */
+.mobile-nav{
+  display:none;
+  margin-top:10px;
+  gap:6px;
+  flex-direction:column;
+}
+.mobile-nav .nav-btn{
+  width:100%;
+  text-align:center;
+  background: transparent;
+  color:var(--brand-red);
+  padding:10px 12px;
+  border-radius:8px;
+  margin: 0;
+}
+.mobile-nav .nav-btn:hover{ 
+  background: rgba(var(--brand-red-rgb), 0.10); 
+  transform: translateY(-1px); 
+}
 
   /* Модальное окно авторизации */
   .auth-modal-overlay {

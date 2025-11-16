@@ -1,14 +1,16 @@
 // frontend/js/cart.js
+const API_BASE = 'http://localhost:8001/api'; // Замените на ваш URL бэкенда
+
 class CartManager {
     constructor() {
         this.cartItems = [];
-        this.loadCart();
+        this.updateCartCounter();
     }
     
     async loadCart() {
         const token = getAuthToken();
         if (!token) {
-            this.showEmptyCart('Для просмотра корзины необходимо авторизоваться');
+            this.showAuthRequired();
             return;
         }
         
@@ -22,8 +24,10 @@ class CartManager {
             if (response.ok) {
                 this.cartItems = await response.json();
                 this.renderCart();
-            } else {
+            } else if (response.status === 404) {
                 this.showEmptyCart('Корзина пуста');
+            } else {
+                this.showEmptyCart('Ошибка загрузки корзины');
             }
         } catch (error) {
             console.error('Ошибка загрузки корзины:', error);
@@ -35,6 +39,7 @@ class CartManager {
         const token = getAuthToken();
         if (!token) {
             alert('Для добавления в корзину необходимо авторизоваться');
+            openAuthModal();
             return false;
         }
         
@@ -52,10 +57,22 @@ class CartManager {
             });
             
             if (response.ok) {
-                await this.loadCart(); // Перезагружаем корзину
+                const newItem = await response.json();
+                // Обновляем локальное состояние
+                const existingIndex = this.cartItems.findIndex(item => 
+                    item.id === newItem.id
+                );
+                if (existingIndex >= 0) {
+                    this.cartItems[existingIndex] = newItem;
+                } else {
+                    this.cartItems.push(newItem);
+                }
+                
+                this.updateCartCounter();
                 return true;
             } else {
-                alert('Ошибка добавления в корзину');
+                const error = await response.json();
+                alert(`Ошибка добавления в корзину: ${error.detail}`);
                 return false;
             }
         } catch (error) {
@@ -81,7 +98,14 @@ class CartManager {
             });
             
             if (response.ok) {
-                await this.loadCart();
+                const updatedItem = await response.json();
+                // Обновляем локальное состояние
+                const index = this.cartItems.findIndex(item => item.id === itemId);
+                if (index >= 0) {
+                    this.cartItems[index] = updatedItem;
+                }
+                this.renderCart();
+                this.updateCartCounter();
             }
         } catch (error) {
             console.error('Ошибка обновления количества:', error);
@@ -99,16 +123,35 @@ class CartManager {
             });
             
             if (response.ok) {
-                await this.loadCart();
+                // Удаляем из локального состояния
+                this.cartItems = this.cartItems.filter(item => item.id !== itemId);
+                this.renderCart();
+                this.updateCartCounter();
             }
         } catch (error) {
             console.error('Ошибка удаления из корзины:', error);
         }
     }
     
+    async clearCart() {
+        const token = getAuthToken();
+        if (!token) return;
+        
+        try {
+            // Удаляем все элементы по одному (или можно добавить endpoint для очистки всей корзины)
+            for (const item of this.cartItems) {
+                await this.removeFromCart(item.id);
+            }
+        } catch (error) {
+            console.error('Ошибка очистки корзины:', error);
+        }
+    }
+    
     renderCart() {
         const container = document.getElementById('cart-items');
-        const totalElement = document.getElementById('cart-total');
+        const itemsCountElement = document.getElementById('items-count');
+        const subtotalElement = document.getElementById('subtotal');
+        const totalElement = document.getElementById('total');
         const checkoutBtn = document.getElementById('checkout-btn');
         
         if (this.cartItems.length === 0) {
@@ -117,63 +160,112 @@ class CartManager {
         }
         
         let total = 0;
+        let itemsCount = 0;
+        
         container.innerHTML = '';
         
         this.cartItems.forEach(item => {
             const itemTotal = item.product.price * item.quantity;
             total += itemTotal;
+            itemsCount += item.quantity;
             
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item';
             itemElement.innerHTML = `
-                <img src="${item.product.image_url || './img/placeholder.jpg'}" 
-                     alt="${item.product.name}" 
-                     class="cart-item-image">
+                <div class="cart-item-image">
+                    ${item.product.image_url ? 
+                        `<img src="${item.product.image_url}" alt="${item.product.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">` : 
+                        'Изображение'
+                    }
+                </div>
                 <div class="cart-item-details">
-                    <h3 style="margin: 0 0 10px 0;">${item.product.name}</h3>
-                    <p style="margin: 0 0 5px 0; color: var(--muted);">${item.product.description || ''}</p>
-                    <p style="margin: 0 0 10px 0; font-weight: bold;">Цена: ${item.product.price} руб.</p>
+                    <h3>${item.product.name}</h3>
+                    <div class="cart-item-price">${item.product.price.toLocaleString('ru-RU')} ₽</div>
                     <div class="quantity-controls">
                         <button class="quantity-btn" onclick="cart.updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
-                        <span style="font-weight: bold; min-width: 30px; text-align: center;">${item.quantity}</span>
+                        <input type="text" class="quantity-input" value="${item.quantity}" readonly>
                         <button class="quantity-btn" onclick="cart.updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                        <button class="remove-btn" onclick="cart.removeFromCart(${item.id})">Удалить</button>
                     </div>
-                    <p style="margin: 10px 0 0 0; font-size: 1.2em; font-weight: bold;">
-                        Сумма: ${itemTotal} руб.
-                    </p>
                 </div>
-                <button class="remove-btn" onclick="cart.removeFromCart(${item.id})">Удалить</button>
             `;
             container.appendChild(itemElement);
         });
         
-        totalElement.innerHTML = `
-            <div>Общая сумма: <strong>${total} руб.</strong></div>
-            <div style="font-size: 0.8em; color: var(--muted); margin-top: 10px;">
-                Товаров в корзине: ${this.cartItems.length}
-            </div>
-        `;
-        checkoutBtn.style.display = 'block';
+        // Обновляем правую колонку
+        itemsCountElement.textContent = `${itemsCount} шт.`;
+        subtotalElement.textContent = `${total.toLocaleString('ru-RU')} ₽`;
+        totalElement.textContent = `${total.toLocaleString('ru-RU')} ₽`;
         
-        // Обработчик для кнопки оформления заказа
-        checkoutBtn.onclick = () => {
-            alert('Функция оформления заказа в разработке!');
-        };
+        checkoutBtn.style.display = 'block';
     }
     
     showEmptyCart(message) {
         const container = document.getElementById('cart-items');
+        const itemsCountElement = document.getElementById('items-count');
+        const subtotalElement = document.getElementById('subtotal');
+        const totalElement = document.getElementById('total');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        
         container.innerHTML = `
             <div class="empty-cart">
                 <h3>${message}</h3>
-                <p>Перейдите в каталог, чтобы добавить товары в корзину</p>
-                <a href="catalog.html" class="nav-btn" style="margin-top: 20px;">Перейти в каталог</a>
+                <p>Добавьте товары из каталога</p>
+                <a href="catalog.html" class="nav-btn" style="margin-top: 20px; display: inline-block;">Перейти в каталог</a>
             </div>
         `;
-        document.getElementById('cart-total').innerHTML = '';
-        document.getElementById('checkout-btn').style.display = 'none';
+        
+        // Обнуляем правую колонку
+        itemsCountElement.textContent = '0 шт.';
+        subtotalElement.textContent = '0 ₽';
+        totalElement.textContent = '0 ₽';
+        checkoutBtn.style.display = 'none';
+    }
+    
+    showAuthRequired() {
+        const container = document.getElementById('cart-items');
+        const itemsCountElement = document.getElementById('items-count');
+        const subtotalElement = document.getElementById('subtotal');
+        const totalElement = document.getElementById('total');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        
+        container.innerHTML = `
+            <div class="auth-required">
+                <h3>Необходима авторизация</h3>
+                <p>Для просмотра корзины необходимо войти в систему</p>
+                <button class="nav-btn" onclick="openAuthModal()" style="margin-top: 20px;">Войти или зарегистрироваться</button>
+            </div>
+        `;
+        
+        // Обнуляем правую колонку
+        itemsCountElement.textContent = '0 шт.';
+        subtotalElement.textContent = '0 ₽';
+        totalElement.textContent = '0 ₽';
+        checkoutBtn.style.display = 'none';
+    }
+    
+    updateCartCounter() {
+        const count = this.cartItems.reduce((total, item) => total + item.quantity, 0);
+        const cartButtons = document.querySelectorAll('.nav-btn[data-page="cart"]');
+        
+        cartButtons.forEach(button => {
+            if (count > 0) {
+                button.textContent = `Корзина (${count})`;
+            } else {
+                button.textContent = 'Корзина';
+            }
+        });
+    }
+    
+    // Метод для получения текущего состояния корзины
+    getCartState() {
+        return {
+            items: this.cartItems,
+            total: this.cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0),
+            count: this.cartItems.reduce((sum, item) => sum + item.quantity, 0)
+        };
     }
 }
 
-// Инициализация корзины
+// Инициализация глобального объекта корзины
 const cart = new CartManager();

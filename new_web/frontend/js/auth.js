@@ -1,47 +1,34 @@
 // frontend/js/auth.js
-const API_BASE = "http://localhost:8001/api";
+const API_BASE = 'http://localhost:8001/api';
 
-async function login(email, password) {
-    const response = await fetch(`${API_BASE}/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password })
-    });
-    
-    if (!response.ok) {
-        throw new Error('Ошибка авторизации');
-    }
-    
-    return await response.json();
-}
-
-async function register(userData) {
-    const response = await fetch(`${API_BASE}/register`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData)
-    });
-    
-    if (!response.ok) {
-        throw new Error('Ошибка регистрации');
-    }
-    
-    return await response.json();
-}
-
-function saveAuthData(userData) {
-    localStorage.setItem('mebeldom_auth', JSON.stringify(userData));
-}
-
+// Функции для работы с аутентификацией
 function getAuthToken() {
-    const authData = JSON.parse(localStorage.getItem('mebeldom_auth') || '{}');
-    return authData.access_token;
+    return localStorage.getItem('auth_token');
 }
 
-function getCurrentUser() {
-    return JSON.parse(localStorage.getItem('mebeldom_auth') || 'null');
+function setAuthToken(token) {
+    localStorage.setItem('auth_token', token);
+}
+
+function removeAuthToken() {
+    localStorage.removeItem('auth_token');
+}
+
+function openAuthModal() {
+    const authModal = document.getElementById('authModal');
+    if (authModal) {
+        authModal.classList.add('active');
+    }
+}
+
+function closeAuthModal() {
+    const authModal = document.getElementById('authModal');
+    if (authModal) {
+        authModal.classList.remove('active');
+    }
+}
+
+// Функция проверки авторизации
+function checkAuth() {
+    return !!getAuthToken();
 }

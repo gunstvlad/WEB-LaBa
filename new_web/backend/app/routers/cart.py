@@ -82,3 +82,10 @@ def remove_from_cart(item_id: int, current_user: models.User = Depends(get_curre
     db.delete(cart_item)
     db.commit()
     return {"message": "Товар удален из корзины"}
+
+# backend/app/routers/cart.py - добавьте этот endpoint
+@router.delete("/cart/clear")
+def clear_cart(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db.query(models.CartItem).filter(models.CartItem.user_id == current_user.id).delete()
+    db.commit()
+    return {"message": "Корзина очищена"}
