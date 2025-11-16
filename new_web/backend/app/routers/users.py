@@ -1,13 +1,34 @@
 # backend/app/routers/users.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, EmailStr
 from ..database import get_db
-from .. import models, schemas, auth
+from .. import models, auth
 
 router = APIRouter()
 
-@router.post("/register", response_model=schemas.UserAuthResponse)
-def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+# Схемы Pydantic
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    id: int
+    email: EmailStr
+    full_name: str
+    access_token: str
+    token_type: str
+    
+    class Config:
+        from_attributes = True
+
+@router.post("/register", response_model=UserResponse)
+def register(user: UserCreate, db: Session = Depends(get_db)):
     # Проверяем, нет ли уже пользователя с таким email
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
@@ -30,18 +51,16 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     # Создаем токен
     access_token = auth.create_access_token(data={"sub": user.email})
     
-    return {
-        "id": db_user.id,
-        "email": db_user.email,
-        "full_name": db_user.full_name,
-        "is_active": db_user.is_active,
-        "created_at": db_user.created_at,
-        "access_token": access_token,
-        "token_type": "bearer"
-    }
+    return UserResponse(
+        id=db_user.id,
+        email=db_user.email,
+        full_name=db_user.full_name,
+        access_token=access_token,
+        token_type="bearer"
+    )
 
-@router.post("/login", response_model=schemas.UserAuthResponse)
-def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
+@router.post("/login", response_model=UserResponse)
+def login(user: UserLogin, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if not db_user or not auth.verify_password(user.password, db_user.hashed_password):
         raise HTTPException(
@@ -51,12 +70,10 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     
     access_token = auth.create_access_token(data={"sub": user.email})
     
-    return {
-        "id": db_user.id,
-        "email": db_user.email,
-        "full_name": db_user.full_name,
-        "is_active": db_user.is_active,
-        "created_at": db_user.created_at,
-        "access_token": access_token,
-        "token_type": "bearer"
-    }
+    return UserResponse(
+        id=db_user.id,
+        email=db_user.email,
+        full_name=db_user.full_name,
+        access_token=access_token,
+        token_type="bearer"
+    )

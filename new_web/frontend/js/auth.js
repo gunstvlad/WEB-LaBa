@@ -1,5 +1,5 @@
 // frontend/js/auth.js
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "http://localhost:8001/api";
 
 async function login(email, password) {
     const response = await fetch(`${API_BASE}/login`, {

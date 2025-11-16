@@ -1,29 +1,37 @@
+# backend/app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from .database import engine, Base
-from . import models
-from .routers import users, products, cart, reviews
+from fastapi.responses import JSONResponse
 
-models.Base.metadata.create_all(bind=engine)
+app = FastAPI(title="Мебельный магазин API")
 
-app = FastAPI(title="мебельный магазин")
-
+# Правильные настройки CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:5501",  # Live Server
+        "http://127.0.0.1:5501",  # Live Server альтернативный
+        "http://localhost:3000",  # React dev server
+        "http://127.0.0.1:3000",  # React dev server альтернативный
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    )
+    allow_methods=["*"],  # Разрешить все методы
+    allow_headers=["*"],  # Разрешить все заголовки
+)
 
-app.include_router(users.router, prefix="/users", tags=["Users"])
-app.include_router(products.router, prefix="/products", tags=["Products"])
-app.include_router(cart.router, prefix="/cart", tags=["Cart"])
-app.include_router(reviews.router, prefix="/reviews", tags=["Reviews"])
+# Добавьте обработчик для OPTIONS запросов
+@app.options("/api/{path:path}")
+async def options_handler():
+    return JSONResponse(status_code=200, content={})
 
+# Ваши остальные роутеры...
+from .routers import users, products, cart, reviews
+
+app.include_router(users.router, prefix="/api", tags=["users"])
+app.include_router(products.router, prefix="/api", tags=["products"])
+app.include_router(cart.router, prefix="/api", tags=["cart"])
+app.include_router(reviews.router, prefix="/api", tags=["reviews"])
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the Furniture Store API!"}
-
+    return {"message": "Мебельный магазин API"}

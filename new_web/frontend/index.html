@@ -451,6 +451,7 @@
             <a href="catalog.html" class="nav-btn" data-page="catalog">Каталог</a>
             <a href="contacts.html" class="nav-btn" data-page="contacts">Контакты</a>
             <a href="profile.html" class="nav-btn" data-page="profile">Профиль</a>
+            <a href="cart.html" class="nav-btn" data-page="cart">Корзина</a>
         </nav>
       </div>
 
@@ -657,6 +658,65 @@
 </footer>
 
 <script>
+// Константы для API - выносим наружу
+const API_BASE = "http://localhost:8001/api";
+
+// Функции для работы с API
+async function apiLogin(email, password) {
+    try {
+        const response = await fetch(`${API_BASE}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Ошибка авторизации');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Login error:', error);
+        throw error;
+    }
+}
+
+async function apiRegister(userData) {
+    try {
+        const response = await fetch(`${API_BASE}/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Ошибка регистрации');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Register error:', error);
+        throw error;
+    }
+}
+
+// Функция для получения токена
+function getAuthToken() {
+    const authData = JSON.parse(localStorage.getItem('mebeldom_auth') || '{}');
+    return authData.access_token;
+}
+
+// Функция для получения текущего пользователя
+function getCurrentUser() {
+    return JSON.parse(localStorage.getItem('mebeldom_auth') || 'null');
+}
+
 (function(){
   const inlineNav = document.querySelectorAll('.nav-inline .nav-btn');
   const mobileNav = document.querySelectorAll('.mobile-nav .nav-btn');
@@ -679,30 +739,42 @@
   function renderAuth(){
     authControls.innerHTML = '';
     if(state.isAuthenticated){
-      const name = document.createElement('span');
-      name.className = 'username';
-      name.textContent = state.userData?.name || 'Пользователь';
-      name.style.color = 'var(--brand-red)';
-      name.style.fontWeight = '600';
-      name.style.marginRight = '8px';
+        // Сначала кнопка "Выйти"
+        const btn = document.createElement('button');
+        btn.className = 'auth-ghost';
+        btn.textContent = 'Выйти';
+        btn.addEventListener('click', () => {
+            logout();
+        });
 
-      const btn = document.createElement('button');
-      btn.className = 'auth-ghost';
-      btn.textContent = 'Выйти';
-      btn.addEventListener('click', () => {
-        logout();
-      });
+        // Затем имя пользователя (справа от кнопки)
+        const name = document.createElement('span');
+        name.className = 'username';
+        name.textContent = state.userData?.full_name || state.userData?.name || 'Пользователь';
+        name.style.color = 'var(--brand-red)';
+        name.style.fontWeight = '600';
+        name.style.marginLeft = '12px'; // Отступ слева от кнопки
+        name.style.order = '2'; // Порядок в flex контейнере
 
-      authControls.appendChild(name);
-      authControls.appendChild(btn);
+        // Добавляем в обратном порядке
+        authControls.appendChild(btn);
+        authControls.appendChild(name);
+        
+        // Настраиваем flex порядок
+        authControls.style.display = 'flex';
+        authControls.style.alignItems = 'center';
+        authControls.style.flexDirection = 'row-reverse'; // Меняем порядок
+        authControls.style.justifyContent = 'flex-start';
     } else {
-      const btn = document.createElement('button');
-      btn.className = 'auth-ghost';
-      btn.textContent = 'Войти';
-      btn.addEventListener('click', () => {
-        openAuthModal();
-      });
-      authControls.appendChild(btn);
+        // Для неавторизованных - просто кнопка "Войти"
+        const btn = document.createElement('button');
+        btn.className = 'auth-ghost';
+        btn.textContent = 'Войти';
+        btn.addEventListener('click', () => {
+            openAuthModal();
+        });
+        authControls.appendChild(btn);
+        authControls.style.flexDirection = 'row'; // Сбрасываем для кнопки "Войти"
     }
   }
 
@@ -717,19 +789,21 @@
         b.style.boxShadow = '';
       }
     });
-    currentLabel.textContent = page;
-    content.scrollIntoView({behavior:'smooth', block:'start'});
+    if (currentLabel) currentLabel.textContent = page;
+    if (content) content.scrollIntoView({behavior:'smooth', block:'start'});
   }
 
   function openAuthModal() {
-    authModal.style.display = 'flex';
-    loginForm.reset();
-    registerForm.reset();
-    switchTab('login');
+    if (authModal) {
+      authModal.style.display = 'flex';
+      if (loginForm) loginForm.reset();
+      if (registerForm) registerForm.reset();
+      switchTab('login');
+    }
   }
 
   function closeAuthModal() {
-    authModal.style.display = 'none';
+    if (authModal) authModal.style.display = 'none';
   }
 
   function switchTab(tabName) {
@@ -742,11 +816,11 @@
     });
     
     if (tabName === 'login') {
-      loginForm.style.display = 'block';
-      registerForm.style.display = 'none';
+      if (loginForm) loginForm.style.display = 'block';
+      if (registerForm) registerForm.style.display = 'none';
     } else {
-      loginForm.style.display = 'none';
-      registerForm.style.display = 'block';
+      if (loginForm) loginForm.style.display = 'none';
+      if (registerForm) registerForm.style.display = 'block';
     }
   }
 
@@ -763,73 +837,95 @@
     state.userData = null;
     localStorage.removeItem('mebeldom_auth');
     renderAuth();
+    // Перенаправляем на главную после выхода
+    setPage('home');
   }
 
-  modalTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      switchTab(tab.dataset.tab);
+  // Обработчики модального окна
+  if (modalTabs.length > 0) {
+    modalTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        switchTab(tab.dataset.tab);
+      });
     });
-  });
+  }
 
-  authModal.addEventListener('click', (e) => {
-    if (e.target === authModal) {
-      closeAuthModal();
-    }
-  });
+  if (authModal) {
+    authModal.addEventListener('click', (e) => {
+      if (e.target === authModal) {
+        closeAuthModal();
+      }
+    });
+  }
 
-  loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    if (email && password) {
-      const userData = {
-        name: email.split('@')[0],
-        email: email
-      };
+  // Обработчик формы входа (ТОЛЬКО ОДИН!)
+  if (loginForm) {
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
       
-      login(userData);
-      alert('Вы успешно вошли в систему!');
-    } else {
-      alert('Пожалуйста, заполните все поля');
-    }
-  });
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!email || !password) {
+        alert('Пожалуйста, заполните все поля');
+        return;
+      }
+      
+      try {
+        const userData = await apiLogin(email, password);
+        
+        // Сохраняем данные пользователя и токен
+        login(userData);
+        alert('Вы успешно вошли в систему!');
+      } catch (error) {
+        alert('Ошибка входа: ' + error.message);
+      }
+    });
+  }
 
-  registerForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('registerName').value;
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    const confirmPassword = document.getElementById('registerConfirmPassword').value;
-    const privacyPolicy = document.getElementById('privacyPolicy').checked;
-    const dataStorage = document.getElementById('dataStorage').checked;
-    
-    if (!name || !email || !password || !confirmPassword) {
-      alert('Пожалуйста, заполните все поля');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      alert('Пароли не совпадают');
-      return;
-    }
-    
-    if (!privacyPolicy || !dataStorage) {
-      alert('Необходимо согласие со всеми условиями');
-      return;
-    }
-    
-    const userData = {
-      name: name,
-      email: email
-    };
-    
-    login(userData);
-    alert('Регистрация прошла успешно! Вы вошли в систему.');
-  });
+  // Обработчик формы регистрации (ТОЛЬКО ОДИН!)
+  if (registerForm) {
+    registerForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('registerName').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('registerConfirmPassword').value;
+      const privacyPolicy = document.getElementById('privacyPolicy');
+      const dataStorage = document.getElementById('dataStorage');
+      
+      if (!name || !email || !password || !confirmPassword) {
+        alert('Пожалуйста, заполните все поля');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        alert('Пароли не совпадают');
+        return;
+      }
+      
+      if (!privacyPolicy?.checked || !dataStorage?.checked) {
+        alert('Необходимо согласие со всеми условиями');
+        return;
+      }
+      
+      try {
+        const userData = await apiRegister({
+          email: email,
+          password: password,
+          full_name: name
+        });
+        
+        login(userData);
+        alert('Регистрация прошла успешно! Вы вошли в систему.');
+      } catch (error) {
+        alert('Ошибка регистрации: ' + error.message);
+      }
+    });
+  }
 
+  // Навигация
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.nav-btn');
     if(!btn) return;
@@ -837,24 +933,37 @@
     if(page) setPage(page);
   });
 
-  document.getElementById('brand').addEventListener('click', () => setPage('home'));
-  document.getElementById('brand').addEventListener('keydown', (e) => { if(e.key==='Enter') setPage('home'); });
+  const brandElement = document.getElementById('brand');
+  if (brandElement) {
+    brandElement.addEventListener('click', () => setPage('home'));
+    brandElement.addEventListener('keydown', (e) => { 
+      if(e.key === 'Enter') setPage('home'); 
+    });
+  }
 
   function checkAuth() {
-    const savedAuth = localStorage.getItem('mebeldom_auth');
-    if (savedAuth) {
+    const savedAuth = getCurrentUser();
+    if (savedAuth && savedAuth.access_token) {
       state.isAuthenticated = true;
-      state.userData = JSON.parse(savedAuth);
+      state.userData = savedAuth;
     }
     renderAuth();
   }
 
-  // init
+  // Инициализация
   checkAuth();
   setPage(state.currentPage);
 
-  // export
-  window.appHeader = { state, setPage, renderAuth };
+  // Экспорт для глобального доступа
+  window.appHeader = { 
+    state, 
+    setPage, 
+    renderAuth, 
+    openAuthModal,
+    closeAuthModal,
+    login,
+    logout
+  };
 })();
 </script>
 </body>

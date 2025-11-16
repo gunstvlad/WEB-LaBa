@@ -1,84 +1,367 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <!-- Повторяем стили из index.html -->
-    <style>
-        /* Добавляем стили для корзины */
-        .cart-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .cart-item {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            background: white;
-        }
-        
-        .cart-item-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .cart-item-details {
-            flex-grow: 1;
-        }
-        
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-        }
-        
-        .quantity-btn {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #d1d5db;
-            background: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .remove-btn {
-            background: var(--brand-red);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        
-        .cart-total {
-            text-align: right;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-top: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Корзина - Мебельный магазин</title>
+<style>
+  /* Все стили из index.html */
+  :root{
+    --brand-red: #d0181e;
+    --brand-red-rgb: 208, 24, 30;
+    --brand-blue: #60a5fa;
+    --bg: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --container-max: 1100px;
+    --radius: 10px;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--text); background:#f3f6f9;}
+  .container{max-width:var(--container-max);margin:0 auto;padding:0 50px;}
+
+  header.site-header{
+    position:sticky;top:0;z-index:60;
+    background: white;
+    color:var(--text);
+    box-shadow:0 6px 18px rgba(2,6,23,0.06);
+    padding:8px 0;
+  }
+
+  .top-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    cursor:pointer;
+  }
+  .brand img{height:52px; display:block}
+  .brand .title{font-weight:700; font-size:18px; color:var(--brand-red); letter-spacing:0.2px}
+
+  .nav-inline{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .nav-btn{
+    padding:10px 14px;
+    border-radius:8px;
+    border:0;
+    color:var(--brand-red);
+    margin-left: 20px;
+    font-weight:600;
+    cursor:pointer;
+    background: transparent;
+    transition: transform .12s ease, filter .12s ease, background-color .12s ease, box-shadow .18s ease;
+    text-decoration: none; 
+    display: inline-block;
+  }
+
+  .nav-btn:hover,
+  .nav-btn:focus {
+    background: rgba(var(--brand-red-rgb), 0.10);
+    transform: translateY(-2px);
+    filter: none;
+    color:var(--brand-red);
+    text-decoration: none; 
+  }
+
+  .nav-btn[aria-current="page"]{
+    background: red;
+    color: #fff;
+    box-shadow:
+      0 6px 18px rgba(var(--brand-red-rgb), 0.28),
+      0 0 40px rgba(var(--brand-red-rgb), 0.18);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .controls{display:flex;align-items:center;gap:12px}
+
+  .auth-ghost{
+    padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--brand-red);font-weight:600;cursor:pointer;
+    transition: background-color .12s ease, color .12s ease, transform .08s;
+    text-decoration: none; 
+  }
+  .auth-ghost:hover{ 
+    background: rgba(var(--brand-red-rgb), 0.08); 
+    color: #fff; 
+    transform: translateY(-1px); 
+    text-decoration: none; 
+  }
+
+  .mobile-nav{
+    display:none;
+    margin-top:10px;
+    gap:8px;
+    flex-direction:column;
+    margin-left: -8px;
+  }
+  .mobile-nav .nav-btn{
+    width:100%;
+    text-align:center;
+    background: transparent;
+    color:var(--brand-red);
+    padding:10px 12px;
+    border-radius:8px;
+    text-decoration: none;
+  }
+  .mobile-nav .nav-btn:hover{ 
+    background: rgba(var(--brand-red-rgb), 0.10); 
+    transform: translateY(-1px); 
+    text-decoration: none; 
+  }
+
+  /* Стили для корзины */
+  .cart-container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 20px 18px;
+  }
+
+  .cart-content {
+    background: white;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+    margin-top: 12px;
+  }
+
+  .cart-item {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background: white;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cart-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  .cart-item-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .cart-item-details {
+    flex-grow: 1;
+  }
+
+  .cart-item-details h3 {
+    margin: 0 0 10px 0;
+    color: var(--text);
+    font-size: 18px;
+  }
+
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0;
+  }
+
+  .quantity-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .quantity-btn:hover {
+    background: #f3f4f6;
+    border-color: var(--brand-red);
+  }
+
+  .remove-btn {
+    background: var(--brand-red);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .remove-btn:hover {
+    background: #b3151a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--brand-red-rgb), 0.3);
+  }
+
+  .cart-total {
+    text-align: right;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 30px;
+    padding: 25px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+  }
+
+  .checkout-btn {
+    background: var(--brand-red);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 20px;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .checkout-btn:hover {
+    background: #b3151a;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(var(--brand-red-rgb), 0.35);
+  }
+
+  .empty-cart {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-cart h3 {
+    color: var(--text);
+    margin-bottom: 15px;
+  }
+
+  footer.site-footer{
+    background: #ffffff;
+    color: #0f172a;
+    padding:20px 0;
+    border-top:1px solid #e6e9ee;
+    margin-top: 40px;
+  }
+  footer .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  footer .small{font-size:14px;color:#374151}
+
+  /* Адаптивность */
+  @media (max-width:800px){
+    .nav-inline{display:none}
+    .mobile-nav{display:flex}
+    .brand img{height:44px}
+    .brand .title{display:none}
+    .top-row{align-items:flex-start}
+    .container{padding:0 20px;}
+  }
+
+  @media (max-width:600px){
+    .cart-item {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .cart-item-image {
+      width: 100%;
+      height: 200px;
+    }
+    
+    .quantity-controls {
+      justify-content: center;
+    }
+    
+    .cart-total {
+      text-align: center;
+    }
+  }
+
+  .nav-btn:focus,.auth-ghost:focus{outline:3px solid rgba(59,130,246,0.14); outline-offset:2px}
+</style>
 </head>
 <body>
-    <!-- Header (такой же как в index.html) -->
-    
-    <main class="container">
-        <div id="content">
-            <h1>Корзина</h1>
-            <div id="cart-items"></div>
-            <div id="cart-total" class="cart-total"></div>
-            <button id="checkout-btn" style="display: none;">Оформить заказ</button>
-        </div>
-    </main>
 
-    <script src="js/cart.js"></script>
+<header class="site-header" role="banner">
+  <div class="container">
+    <div class="top-row">
+      <div style="display:flex;align-items:center;gap:18px;min-width:0;">
+        <div class="brand" id="brand" tabindex="0" title="Перейти на главную">
+          <img src="./img/logo.png" alt="Логотип — Мебельный Дом" id="logo" />
+          <div class="title">Мебельный Дом</div>
+        </div>
+
+        <nav class="nav-inline" aria-label="Основная навигация">
+            <a href="index.html" class="nav-btn" data-page="home">Главная</a>
+            <a href="catalog.html" class="nav-btn" data-page="catalog">Каталог</a>
+            <a href="contacts.html" class="nav-btn" data-page="contacts">Контакты</a>
+            <a href="profile.html" class="nav-btn" data-page="profile">Профиль</a>
+            <a href="cart.html" class="nav-btn" data-page="cart" aria-current="page">Корзина</a>
+        </nav>
+      </div>
+
+      <div class="controls" id="authControls">
+      </div>
+    </div>
+
+    <nav class="mobile-nav" id="mobileNav" aria-label="Мобильная навигация">
+      <a href="index.html" class="nav-btn" data-page="home">Главная</a>
+      <a href="catalog.html" class="nav-btn" data-page="catalog">Каталог</a>
+      <a href="contacts.html" class="nav-btn" data-page="contacts">Контакты</a>
+      <a href="profile.html" class="nav-btn" data-page="profile">Профиль</a>
+      <a href="cart.html" class="nav-btn" data-page="cart" aria-current="page">Корзина</a>
+    </nav>
+  </div>
+</header>
+
+<main class="cart-container">
+  <div class="cart-content">
+    <h1 style="text-align: center; margin-bottom: 30px; color: var(--brand-red);">Корзина покупок</h1>
+    <div id="cart-items"></div>
+    <div id="cart-total" class="cart-total"></div>
+    <button id="checkout-btn" class="checkout-btn" style="display: none;">Оформить заказ</button>
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div>
+      <strong>Мебельный Дом</strong><br/>
+      <span class="small">© 2025 — Все права защищены</span>
+    </div>
+    <div class="small">Контакты: info@example.com • +7 (900) 000-00-00</div>
+  </div>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  // Установка текущей страницы как корзины
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.appHeader) {
+      window.appHeader.setPage('cart');
+    }
+  });
+</script>
 </body>
 </html>
