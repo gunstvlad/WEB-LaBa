@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from database import engine, Base
-import models
-import routers.users, routers.products, routers.cart, routers.reviews
+from .database import engine, Base
+from . import models
+from .routers import users, products, cart, reviews
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -17,10 +17,10 @@ app.add_middleware(
     allow_headers=["*"],
     )
 
-app.include_router(routers.users.router, prefix="/users", tags=["Users"])
-app.include_router(routers.products.router, prefix="/products", tags=["Products"])
-app.include_router(routers.cart.router, prefix="/cart", tags=["Cart"])
-app.include_router(routers.reviews.router, prefix="/reviews", tags=["Reviews"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(products.router, prefix="/products", tags=["Products"])
+app.include_router(cart.router, prefix="/cart", tags=["Cart"])
+app.include_router(reviews.router, prefix="/reviews", tags=["Reviews"])
 
 
 @app.get("/")
