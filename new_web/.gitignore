@@ -1,0 +1,7 @@
+
+*img*
+*.env
+*.venv
+*__pycache__/
+*.pyc
+reset_db.py

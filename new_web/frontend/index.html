@@ -4,587 +4,163 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Мебельный магазин</title>
+<link rel="stylesheet" href="css/index.css">
 <style>
-  :root{
-    --brand-red: #d0181e;
-    --brand-red-rgb: 208, 24, 30;
-    --brand-blue: #60a5fa;
-    --bg: #ffffff;
-    --text: #111827;
-    --muted: #6b7280;
-    --container-max: 1100px;
-    --radius: 10px;
+  /* Стили для слайдера отзывов */
+  .reviews-section {
+    margin: 60px 0;
   }
-
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--text); background:#f3f6f9;}
-  .container{max-width:var(--container-max);margin:0 auto;padding:0 50px;}
-
-
-:root{
-  --brand-red: #d0181e;
-  --brand-red-rgb: 208, 24, 30;
-  --brand-blue: #60a5fa;
-  --bg: #ffffff;
-  --text: #111827;
-  --muted: #6b7280;
-  --container-max: 1100px;
-  --radius: 10px;
-}
-
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--text); background:#f3f6f9;}
-.container{max-width:var(--container-max);margin:0 auto;padding:0 50px;}
-
-/* ===== HEADER ===== */
-header.site-header{
-  position:sticky;top:0;z-index:60;
-  background: white;
-  color:var(--text);
-  box-shadow:0 6px 18px rgba(2,6,23,0.06);
-  padding:8px 0;
-}
-
-.top-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  flex-wrap: nowrap;
-  min-width: 0;
-}
-
-/* Логотип и бренд */
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  cursor:pointer;
-  flex-shrink: 0;
-}
-.brand img{
-  height:44px;
-  display:block;
-  transition: transform 0.2s ease;
-}
-.brand:hover img{
-  transform: scale(1.05);
-}
-.brand .title{
-  font-weight:700;
-  font-size:16px;
-  color:var(--brand-red);
-  letter-spacing:0.1px;
-  white-space: nowrap;
-}
-
-/* Основная навигация */
-.nav-inline{
-  display:flex;
-  gap:4px;
-  align-items:center;
-  flex-wrap: nowrap;
-  flex: 1;
-  min-width: 0;
-  justify-content: center;
-  margin: 0 16px;
-}
-
-.nav-btn{
-  padding:8px 12px;
-  border-radius:8px;
-  border:0;
-  color:var(--brand-red);
-  margin-left: 8px;
-  font-weight:600;
-  font-size: 14px;
-  cursor:pointer;
-  background: transparent;
-  transition: all 0.2s ease;
-  text-decoration: none; 
-  display: inline-block;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.nav-btn:hover,
-.nav-btn:focus {
-  background: rgba(var(--brand-red-rgb), 0.10);
-  transform: translateY(-1px);
-  color:var(--brand-red);
-}
-
-.nav-btn[aria-current="page"]{
-  background: var(--brand-red);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(var(--brand-red-rgb), 0.25);
-  transform: translateY(-1px);
-}
-
-/* Элементы авторизации */
-.controls{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-shrink: 0;
-}
-
-.auth-ghost{
-  padding:6px 10px;
-  border-radius:8px;
-  border:1px solid rgba(0,0,0,0.06);
-  background:transparent;
-  color:var(--brand-red);
-  font-weight:600;
-  font-size: 14px;
-  cursor:pointer;
-  transition: all 0.2s ease;
-  text-decoration: none; 
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.auth-ghost:hover{ 
-  background: rgba(var(--brand-red-rgb), 0.08); 
-  color: var(--brand-red); 
-  transform: translateY(-1px); 
-}
-
-.username{
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--brand-red);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 140px;
-  flex-shrink: 0;
-}
-
-/* Мобильная навигация */
-.mobile-nav{
-  display:none;
-  margin-top:10px;
-  gap:6px;
-  flex-direction:column;
-}
-.mobile-nav .nav-btn{
-  width:100%;
-  text-align:center;
-  background: transparent;
-  color:var(--brand-red);
-  padding:10px 12px;
-  border-radius:8px;
-  margin: 0;
-}
-.mobile-nav .nav-btn:hover{ 
-  background: rgba(var(--brand-red-rgb), 0.10); 
-  transform: translateY(-1px); 
-}
-
-/* ===== MODAL ===== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 450px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.modal-tab {
-  flex: 1;
-  padding: 16px;
-  background: none;
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.modal-tab.active {
-  color: var(--brand-red);
-  border-bottom: 2px solid var(--brand-red);
-}
-
-.modal-tab:not(.active) {
-  color: var(--muted);
-}
-
-.modal-content {
-  padding: 30px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.form-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--brand-red);
-  box-shadow: 0 0 0 3px rgba(var(--brand-red-rgb), 0.1);
-}
-
-.checkbox-group {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.checkbox {
-  margin-top: 3px;
-}
-
-.checkbox-label {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-.checkbox-label a {
-  color: var(--brand-red);
-  text-decoration: none;
-}
-
-.checkbox-label a:hover {
-  text-decoration: underline;
-}
-
-.form-submit {
-  background: var(--brand-red);
-  color: white;
-  border: none;
-  padding: 14px 30px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  margin-top: 10px;
-}
-
-.form-submit:hover {
-  background: #b3151a;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(var(--brand-red-rgb), 0.3);
-}
-
-/* ===== CONTENT SECTIONS ===== */
-.about-row{
-  display:flex;
-  gap:28px;
-  align-items:flex-start;
-  margin:28px 0;
-}
-
-.about-text{
-  flex:1 1 60%;
-  color: #334155;
-  line-height:1.6;
-}
-.about-text h3{
-  margin:0 0 12px;
-  font-size:20px;
-  color:var(--brand-red);
-  font-weight:700;
-}
-
-.about-card{
-  flex:1 1 40%;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-}
-
-.about-image{
-  width:100%;
-  max-width:540px;
-  border-radius:14px;
-  box-shadow:0 10px 30px rgba(2,6,23,0.06);
-  overflow:hidden;
-  background: #fff;
-}
-
-.features{
-  margin-top:28px;
-  background: #fff;
-  border-radius:14px;
-  padding:28px;
-  box-shadow:0 6px 18px rgba(2,6,23,0.04);
-}
-
-.features .lead{
-  color:#374151;
-  margin-bottom:18px;
-}
-
-.features-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:18px;
-  margin-top:12px;
-}
-
-.feature{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-  padding:18px;
-  border-radius:12px;
-  min-height:110px;
-  box-shadow:0 6px 20px rgba(2,6,23,0.03);
-  overflow:hidden;
-  transition: transform 0.2s ease;
-}
-
-.feature:hover{
-  transform: translateY(-2px);
-}
-
-.feature .icon{
-  width:44px;
-  height:44px;
-  border-radius:999px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-weight:700;
-  flex:0 0 44px;
-  box-shadow:0 6px 18px rgba(2,6,23,0.06);
-}
-
-.feature .f-body{display:flex;flex-direction:column}
-.feature .f-title{font-weight:700;color:#0f172a;margin-bottom:6px}
-.feature .f-desc{color:#475569;font-size:14px;line-height:1.45}
-
-.g-blue{ background: linear-gradient(135deg,#e6f0ff 0%, #f7fbff 100%); }
-.g-purple{ background: linear-gradient(135deg,#f7e9ff 0%, #fbf8ff 100%); }
-.g-green{ background: linear-gradient(135deg,#eafaf0 0%, #fbfffb 100%); }
-
-.ic-blue{ background:#2563eb; }
-.ic-purple{ background:#7c3aed; }
-.ic-green{ background:#059669; }
-
-.team-section{
-  margin-top:40px;
-  background:#0f172a;
-  border-radius:20px;
-  padding:36px 28px;
-  color:#e2e8f0;
-  box-shadow:0 10px 30px rgba(0,0,0,0.12);
-}
-
-.team-section h3{
-  margin:0 0 10px;
-  color:#60a5fa;
-  font-size:18px;
-}
-
-.team-section p.lead{
-  margin:0 0 28px;
-  color:#cbd5e1;
-}
-
-.team-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:22px;
-}
-
-.team-card{
-  background:rgba(255,255,255,0.06);
-  border-radius:12px;
-  padding:16px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.15);
-  transition:transform .15s ease, box-shadow .2s ease;
-}
-
-.team-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 8px 24px rgba(0,0,0,0.25);
-}
-
-.team-card img{
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  object-fit:cover;
-  flex-shrink:0;
-  border:2px solid rgba(255,255,255,0.15);
-}
-
-.team-info{
-  display:flex;
-  flex-direction:column;
-}
-
-.team-name{
-  font-weight:700;
-  color:#f8fafc;
-  margin-bottom:4px;
-}
-
-.team-role{
-  color:#cbd5e1;
-  font-size:14px;
-}
-
-/* ===== FOOTER ===== */
-footer.site-footer{
-  background: #ffffff;
-  color: #0f172a;
-  padding:20px 0;
-  border-top:1px solid #e6e9ee;
-  margin-top: 40px;
-}
-
-footer .footer-inner{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  flex-wrap: wrap;
-}
-
-footer .small{
-  font-size:14px;
-  color:#374151;
-}
-
-/* ===== АДАПТИВНОСТЬ ===== */
-@media (max-width: 1100px) {
-  .container{
-    padding:0 30px;
-  }
-}
-
-@media (max-width: 980px){
-  .about-row{
-    flex-direction:column;
-    gap: 20px;
-  }
-  .about-card{
-    justify-content:center;
-  }
-  .features-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media (max-width: 900px){
-  .team-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-  .username{
-    max-width: 100px;
-  }
-}
-
-@media (max-width: 800px){
-  .nav-inline{
-    display:none;
-  }
-  .mobile-nav{
-    display:flex;
-  }
-  .brand .title{
-    display:none;
-  }
-  .top-row{
-    align-items:flex-start;
-  }
-  .username{
-    display: none;
-  }
-}
-
-@media (max-width: 700px){
-  .features-grid{
-    grid-template-columns:1fr;
-  }
-  .team-grid{
-    grid-template-columns:1fr;
-  }
-  .container{
-    padding:0 20px;
-  }
-}
-
-@media (max-width: 600px){
-  .brand img{
-    height: 40px;
-  }
-  .auth-ghost{
-    padding: 5px 8px;
-    font-size: 13px;
-  }
-  .about-row{
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
-
-@media (max-width: 480px){
-  .container{
-    padding:0 15px;
-  }
-  footer .footer-inner{
-    flex-direction: column;
+  
+  .reviews-section h3 {
     text-align: center;
+    margin-bottom: 8px;
+    color: #0f172a;
+    font-size: 28px;
+  }
+  
+  .reviews-lead {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .reviews-slider {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  
+  .reviews-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .review-slide {
+    flex: 0 0 100%;
+    padding: 30px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+  
+  .review-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .review-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 16px;
+    border: 2px solid var(--brand-red);
+  }
+  
+  .review-info {
+    flex: 1;
+  }
+  
+  .review-author {
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+  }
+  
+  .review-date {
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  .review-rating {
+    color: #f59e0b;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  .review-text {
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+    font-style: italic;
+  }
+  
+  .slider-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .slider-btn {
+    background: var(--brand-red);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.3s ease;
+  }
+  
+  .slider-btn:hover {
+    background: #b3151a;
+    transform: scale(1.1);
+  }
+  
+  .slider-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .slider-dots {
+    display: flex;
     gap: 8px;
   }
-}
-
-/* Accessibility */
-.nav-btn:focus,
-.auth-ghost:focus{
-  outline:3px solid rgba(59,130,246,0.14);
-  outline-offset:2px;
-}
-  .nav-btn:focus,.auth-ghost:focus{outline:3px solid rgba(59,130,246,0.14); outline-offset:2px}
+  
+  .slider-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .slider-dot.active {
+    background: var(--brand-red);
+  }
+  
+  @media (max-width: 768px) {
+    .review-slide {
+      padding: 20px;
+    }
+    
+    .review-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .review-avatar {
+      margin-right: 0;
+      margin-bottom: 12px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -599,7 +175,7 @@ footer .small{
         </div>
 
         <nav class="nav-inline" aria-label="Основная навигация">
-            <a href="index.html" class="nav-btn" data-page="home">Главная</a>
+            <a href="index.html" class="nav-btn" data-page="home" aria-current="page">Главная</a>
             <a href="catalog.html" class="nav-btn" data-page="catalog">Каталог</a>
             <a href="contacts.html" class="nav-btn" data-page="contacts">Контакты</a>
             <a href="profile.html" class="nav-btn" data-page="profile">Профиль</a>
@@ -608,26 +184,30 @@ footer .small{
       </div>
 
       <div class="controls" id="authControls">
+        <!-- JS заполнит -->
       </div>
     </div>
 
     <nav class="mobile-nav" id="mobileNav" aria-label="Мобильная навигация">
-      <a href="index.html" class="nav-btn" data-page="home">Главная</a>
+      <a href="index.html" class="nav-btn" data-page="home" aria-current="page">Главная</a>
       <a href="catalog.html" class="nav-btn" data-page="catalog">Каталог</a>
       <a href="contacts.html" class="nav-btn" data-page="contacts">Контакты</a>
       <a href="profile.html" class="nav-btn" data-page="profile">Профиль</a>
+      <a href="cart.html" class="nav-btn" data-page="cart">Корзина</a>
     </nav>
   </div>
 </header>
 
-<div class="modal-overlay" id="authModal">
-  <div class="modal">
-    <div class="modal-header">
-      <button class="modal-tab active" data-tab="login">Вход</button>
-      <button class="modal-tab" data-tab="register">Регистрация</button>
+<!-- Модальное окно авторизации -->
+<div class="auth-modal-overlay" id="authModal">
+  <div class="auth-modal">
+    <div class="auth-modal-header">
+      <button class="auth-modal-tab active" data-tab="login">Вход</button>
+      <button class="auth-modal-tab" data-tab="register">Регистрация</button>
     </div>
     
-    <div class="modal-content">
+    <div class="auth-modal-content">
+      <!-- Форма входа -->
       <form id="loginForm" style="display: block;">
         <div class="form-group">
           <label for="loginEmail" class="form-label">Email</label>
@@ -641,7 +221,8 @@ footer .small{
         
         <button type="submit" class="form-submit">Войти</button>
       </form>
-      
+
+      <!-- Форма регистрации -->
       <form id="registerForm" style="display: none;">
         <div class="form-group">
           <label for="registerName" class="form-label">ФИО</label>
@@ -735,8 +316,11 @@ footer .small{
             </div>
         </div>
     </section>
+
+    <!-- ===== Reviews Slider Section ===== -->
+
     <!-- ===== Team Section ===== -->
-        <section class="team-section" aria-label="Наша команда">
+    <section class="team-section" aria-label="Наша команда">
         <h3>Наша команда</h3>
         <p class="lead">Люди, которые делают вашу мебель с любовью и вниманием к деталям</p>
 
@@ -765,36 +349,26 @@ footer .small{
             </div>
             </div>
         </div>
-        </section>
-        <!-- Добавляем в index.html после команды -->
-        <section class="reviews-section" aria-label="Отзывы клиентов">
-            <h3 style="text-align: center; margin-bottom: 20px;">Отзывы наших клиентов</h3>
-            
-            <div id="reviews-container" style="max-height: 400px; overflow-y: auto; padding: 20px;">
-                <!-- Отзывы будут загружаться здесь -->
-            </div>
-            
-            <div id="add-review-form" style="margin-top: 30px; display: none;">
-                <h4>Оставить отзыв</h4>
-                <form id="review-form">
-                    <div style="margin-bottom: 15px;">
-                        <label>Оценка:</label>
-                        <select id="review-rating" required>
-                            <option value="5">5 ★</option>
-                            <option value="4">4 ★</option>
-                            <option value="3">3 ★</option>
-                            <option value="2">2 ★</option>
-                            <option value="1">1 ★</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <textarea id="review-text" placeholder="Ваш отзыв..." 
-                                style="width: 100%; height: 100px; padding: 10px;" required></textarea>
-                    </div>
-                    <button type="submit" class="form-submit">Отправить отзыв</button>
-                </form>
-            </div>
-        </section>
+    </section>
+    <section class="reviews-section" aria-label="Отзывы клиентов">
+      <h3>Отзывы наших клиентов</h3>
+      <p class="reviews-lead">Узнайте, что говорят о нас люди, которые уже обустроили свой дом с нашей мебелью</p>
+      
+      <div class="reviews-slider">
+        <div class="reviews-track" id="reviewsTrack">
+          <!-- Отзывы будут добавлены через JavaScript -->
+        </div>
+      </div>
+      
+      <div class="slider-controls">
+        <button class="slider-btn" id="prevBtn" aria-label="Предыдущий отзыв">‹</button>
+        
+        <div class="slider-dots" id="sliderDots">
+          <!-- Точки навигации будут добавлены через JavaScript -->
+        </div>
+        
+        <button class="slider-btn" id="nextBtn" aria-label="Следующий отзыв">›</button>
+      </div>
     </section>
   </div>
 </main>
@@ -809,76 +383,168 @@ footer .small{
   </div>
 </footer>
 
+<script src="js/auth.js"></script>
 <script>
-// Константы для API - выносим наружу
-const API_BASE = "http://localhost:8001/api";
+// Данные отзывов
+const reviewsData = [
+  {
+    id: 1,
+    author: "Екатерина Смирнова",
+    date: "15 января 2025",
+    rating: "★★★★★",
+    text: "Заказывали кухонный гарнитур. Остались очень довольны! Качество материалов на высоте, сборка быстрая и аккуратная. Дизайнер помогла подобрать идеальное решение для нашей небольшой кухни.",
+    avatar: "./img/review1.jpg"
+  },
+  {
+    id: 2,
+    author: "Дмитрий Волков",
+    date: "8 января 2025",
+    rating: "★★★★★",
+    text: "Приобрели диван в гостиную. Прекрасное качество, удобная конструкция, доставка вовремя. Особенно порадовала вежливость сборщиков - работали чисто и профессионально.",
+    avatar: "./img/review2.jpg"
+  },
+  {
+    id: 3,
+    author: "Анна Козлова",
+    date: "3 января 2025",
+    rating: "★★★★☆",
+    text: "Заказывали детскую мебель. Ребёнок в восторге! Всё сделано без острых углов, использованы безопасные материалы. Небольшая задержка по срокам, но в целом рекомендую.",
+    avatar: "./img/review3.jpg"
+  },
+  {
+    id: 4,
+    author: "Сергей Николаев",
+    date: "28 декабря 2024",
+    rating: "★★★★★",
+    text: "Отличный шкаф-купе! Вместительный, бесшумные раздвижные двери, качественная фурнитура. Сборка заняла всего 2 часа. Буду рекомендовать вашу компанию друзьям!",
+    avatar: "./img/review4.jpg"
+  },
+  {
+    id: 5,
+    author: "Ольга Петрова",
+    date: "20 декабря 2024",
+    rating: "★★★★★",
+    text: "Второй раз обращаюсь в этот магазин. В этот раз покупали журнальный столик и тумбу под ТВ. Всё идеально вписалось в интерьер. Качество как всегда на высоте!",
+    avatar: "./img/review5.jpg"
+  }
+];
 
-// Функции для работы с API
-async function apiLogin(email, password) {
-    try {
-        const response = await fetch(`${API_BASE}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password })
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || 'Ошибка авторизации');
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Login error:', error);
-        throw error;
+// Инициализация слайдера
+function initReviewsSlider() {
+  const track = document.getElementById('reviewsTrack');
+  const dotsContainer = document.getElementById('sliderDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  
+  let currentSlide = 0;
+  
+  // Создание слайдов
+  function createSlides() {
+    track.innerHTML = '';
+    dotsContainer.innerHTML = '';
+    
+    reviewsData.forEach((review, index) => {
+      // Создание слайда
+      const slide = document.createElement('div');
+      slide.className = 'review-slide';
+      slide.innerHTML = `
+        <div class="review-header">
+          <img src="${review.avatar}" alt="${review.author}" class="review-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNkNzcyNzIiLz4KPHN2ZyB4PSIxMiIgeT0iMTUiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI2IDIwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTMgMTVDMTMgMTIuNzkwOSAxNC43OTA5IDExIDE3IDExQzE5LjIwOTEgMTEgMjEgMTIuNzkwOSAyMSAxNUMxNS42ODYzIDE1IDEzIDE1IDEzIDE1WiIgZmlsbD0id2hpdGUiLz4KPGNpcmNsZSBjeD0iMTciIGN5PSI4IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+'">
+          <div class="review-info">
+            <h4 class="review-author">${review.author}</h4>
+            <p class="review-date">${review.date}</p>
+          </div>
+        </div>
+        <div class="review-rating">${review.rating}</div>
+        <p class="review-text">${review.text}</p>
+      `;
+      track.appendChild(slide);
+      
+      // Создание точки навигации
+      const dot = document.createElement('button');
+      dot.className = `slider-dot ${index === 0 ? 'active' : ''}`;
+      dot.setAttribute('aria-label', `Перейти к отзыву ${index + 1}`);
+      dot.addEventListener('click', () => goToSlide(index));
+      dotsContainer.appendChild(dot);
+    });
+  }
+  
+  // Переход к конкретному слайду
+  function goToSlide(slideIndex) {
+    currentSlide = slideIndex;
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    
+    // Обновление активной точки
+    document.querySelectorAll('.slider-dot').forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentSlide);
+    });
+    
+    // Обновление состояния кнопок
+    updateButtons();
+  }
+  
+  // Обновление состояния кнопок навигации
+  function updateButtons() {
+    prevBtn.disabled = currentSlide === 0;
+    nextBtn.disabled = currentSlide === reviewsData.length - 1;
+  }
+  
+  // Следующий слайд
+  function nextSlide() {
+    if (currentSlide < reviewsData.length - 1) {
+      goToSlide(currentSlide + 1);
     }
-}
-
-async function apiRegister(userData) {
-    try {
-        const response = await fetch(`${API_BASE}/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData)
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || 'Ошибка регистрации');
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Register error:', error);
-        throw error;
+  }
+  
+  // Предыдущий слайд
+  function prevSlide() {
+    if (currentSlide > 0) {
+      goToSlide(currentSlide - 1);
     }
+  }
+  
+  
+  // Инициализация событий
+  prevBtn.addEventListener('click', prevSlide);
+  nextBtn.addEventListener('click', nextSlide);
+  
+  // Свайпы для мобильных устройств
+  let startX = 0;
+  track.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+  });
+  
+  track.addEventListener('touchend', (e) => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+    
+    if (Math.abs(diff) > 50) { // Минимальное расстояние свайпа
+      if (diff > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+  });
+  
+  // Запуск инициализации
+  createSlides();
+  updateButtons();
 }
 
-// Функция для получения токена
-function getAuthToken() {
-    const authData = JSON.parse(localStorage.getItem('mebeldom_auth') || '{}');
-    return authData.access_token;
-}
-
-// Функция для получения текущего пользователя
-function getCurrentUser() {
-    return JSON.parse(localStorage.getItem('mebeldom_auth') || 'null');
-}
-
-(function(){
+// Запуск слайдера после загрузки DOM
+document.addEventListener('DOMContentLoaded', function() {
+  initReviewsSlider();
+  
+  // Остальной ваш код...
   const inlineNav = document.querySelectorAll('.nav-inline .nav-btn');
   const mobileNav = document.querySelectorAll('.mobile-nav .nav-btn');
   const allNavBtns = [...inlineNav, ...mobileNav];
   const authControls = document.getElementById('authControls');
   const content = document.getElementById('content');
-  const currentLabel = document.getElementById('current');
 
   const authModal = document.getElementById('authModal');
-  const modalTabs = document.querySelectorAll('.modal-tab');
+  const authModalTabs = document.querySelectorAll('.auth-modal-tab');
   const loginForm = document.getElementById('loginForm');
   const registerForm = document.getElementById('registerForm');
 
@@ -888,61 +554,79 @@ function getCurrentUser() {
     userData: null
   };
 
+  function checkAuth() {
+    const savedAuth = localStorage.getItem('mebeldom_auth');
+    if (savedAuth) {
+      try {
+        const authData = JSON.parse(savedAuth);
+        if (authData && (authData.access_token || authData.email || authData.name)) {
+          state.isAuthenticated = true;
+          state.userData = authData;
+          console.log('User authenticated on index:', authData);
+        }
+      } catch (error) {
+        console.error('Error parsing auth data:', error);
+        localStorage.removeItem('mebeldom_auth');
+      }
+    }
+    renderAuth();
+  }
+
   function renderAuth(){
     authControls.innerHTML = '';
     if(state.isAuthenticated){
-        const btn = document.createElement('button');
-        btn.className = 'auth-ghost';
-        btn.textContent = 'Выйти';
-        btn.addEventListener('click', logout);
-
-        const name = document.createElement('span');
-        name.className = 'username';
-        name.textContent = state.userData?.full_name || 'Пользователь';
-        name.title = state.userData?.full_name || ''; // Полное имя в тултипе
-
-        authControls.appendChild(btn);
-        authControls.appendChild(name);
-        
-    } else {
-        const btn = document.createElement('button');
-        btn.className = 'auth-ghost';
-        btn.textContent = 'Войти';
-        btn.addEventListener('click', openAuthModal);
-        authControls.appendChild(btn);
-    }
-  }
-
-  function setPage(page){
-    state.currentPage = page;
-    allNavBtns.forEach(b => {
-      if(b.dataset.page === page){
-        b.setAttribute('aria-current','page');
-        b.style.boxShadow = '0 3px 10px rgba(0,0,0,0.15)';
-      } else {
-        b.removeAttribute('aria-current');
-        b.style.boxShadow = '';
+      const name = document.createElement('span');
+      name.className = 'username';
+      
+      let userName = 'Пользователь';
+      if (state.userData) {
+        if (state.userData.full_name) {
+          userName = state.userData.full_name;
+        } else if (state.userData.name) {
+          userName = state.userData.name;
+        } else if (state.userData.email) {
+          userName = state.userData.email.split('@')[0];
+        }
       }
-    });
-    if (currentLabel) currentLabel.textContent = page;
-    if (content) content.scrollIntoView({behavior:'smooth', block:'start'});
+      
+      name.textContent = userName;
+      name.style.color = 'var(--brand-red)';
+      name.style.fontWeight = '600';
+      name.style.marginRight = '8px';
+
+      const btn = document.createElement('button');
+      btn.className = 'auth-ghost';
+      btn.textContent = 'Выйти';
+      btn.addEventListener('click', () => {
+        logout();
+      });
+
+      authControls.appendChild(name);
+      authControls.appendChild(btn);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'auth-ghost';
+      btn.textContent = 'Войти';
+      btn.addEventListener('click', () => {
+        openAuthModal();
+      });
+      authControls.appendChild(btn);
+    }
   }
 
   function openAuthModal() {
-    if (authModal) {
-      authModal.style.display = 'flex';
-      if (loginForm) loginForm.reset();
-      if (registerForm) registerForm.reset();
-      switchTab('login');
-    }
+    authModal.classList.add('active');
+    loginForm.reset();
+    registerForm.reset();
+    switchAuthTab('login');
   }
 
   function closeAuthModal() {
-    if (authModal) authModal.style.display = 'none';
+    authModal.classList.remove('active');
   }
 
-  function switchTab(tabName) {
-    modalTabs.forEach(tab => {
+  function switchAuthTab(tabName) {
+    authModalTabs.forEach(tab => {
       if (tab.dataset.tab === tabName) {
         tab.classList.add('active');
       } else {
@@ -951,11 +635,11 @@ function getCurrentUser() {
     });
     
     if (tabName === 'login') {
-      if (loginForm) loginForm.style.display = 'block';
-      if (registerForm) registerForm.style.display = 'none';
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
     } else {
-      if (loginForm) loginForm.style.display = 'none';
-      if (registerForm) registerForm.style.display = 'block';
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'block';
     }
   }
 
@@ -972,134 +656,114 @@ function getCurrentUser() {
     state.userData = null;
     localStorage.removeItem('mebeldom_auth');
     renderAuth();
-    // Перенаправляем на главную после выхода
-    setPage('home');
   }
 
-  // Обработчики модального окна
-  if (modalTabs.length > 0) {
-    modalTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        switchTab(tab.dataset.tab);
-      });
+  function setPage(page){
+    state.currentPage = page;
+    allNavBtns.forEach(b => {
+      if(b.dataset.page === page){
+        b.setAttribute('aria-current','page');
+      } else {
+        b.removeAttribute('aria-current');
+      }
     });
+    
+    if (content) content.scrollIntoView({behavior:'smooth', block:'start'});
   }
 
-  if (authModal) {
-    authModal.addEventListener('click', (e) => {
-      if (e.target === authModal) {
-        closeAuthModal();
-      }
+  // Обработчики событий для модального окна авторизации
+  authModalTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      switchAuthTab(tab.dataset.tab);
     });
-  }
+  });
 
-  // Обработчик формы входа (ТОЛЬКО ОДИН!)
-  if (loginForm) {
-    loginForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      
-      if (!email || !password) {
-        alert('Пожалуйста, заполните все поля');
-        return;
-      }
-      
-      try {
-        const userData = await apiLogin(email, password);
-        
-        // Сохраняем данные пользователя и токен
-        login(userData);
-        alert('Вы успешно вошли в систему!');
-      } catch (error) {
-        alert('Ошибка входа: ' + error.message);
-      }
-    });
-  }
+  authModal.addEventListener('click', (e) => {
+    if (e.target === authModal) {
+      closeAuthModal();
+    }
+  });
 
-  // Обработчик формы регистрации (ТОЛЬКО ОДИН!)
-  if (registerForm) {
-    registerForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
+  // Обработка формы входа
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (email && password) {
+      const userData = {
+        name: email.split('@')[0],
+        email: email
+      };
       
-      const name = document.getElementById('registerName').value;
-      const email = document.getElementById('registerEmail').value;
-      const password = document.getElementById('registerPassword').value;
-      const confirmPassword = document.getElementById('registerConfirmPassword').value;
-      const privacyPolicy = document.getElementById('privacyPolicy');
-      const dataStorage = document.getElementById('dataStorage');
-      
-      if (!name || !email || !password || !confirmPassword) {
-        alert('Пожалуйста, заполните все поля');
-        return;
-      }
-      
-      if (password !== confirmPassword) {
-        alert('Пароли не совпадают');
-        return;
-      }
-      
-      if (!privacyPolicy?.checked || !dataStorage?.checked) {
-        alert('Необходимо согласие со всеми условиями');
-        return;
-      }
-      
-      try {
-        const userData = await apiRegister({
-          email: email,
-          password: password,
-          full_name: name
-        });
-        
-        login(userData);
-        alert('Регистрация прошла успешно! Вы вошли в систему.');
-      } catch (error) {
-        alert('Ошибка регистрации: ' + error.message);
-      }
-    });
-  }
+      login(userData);
+      alert('Вы успешно вошли в систему!');
+    } else {
+      alert('Пожалуйста, заполните все поля');
+    }
+  });
+
+  // Обработка формы регистрации
+  registerForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    const privacyPolicy = document.getElementById('privacyPolicy').checked;
+    const dataStorage = document.getElementById('dataStorage').checked;
+    
+    if (!name || !email || !password || !confirmPassword) {
+      alert('Пожалуйста, заполните все поля');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      alert('Пароли не совпадают');
+      return;
+    }
+    
+    if (!privacyPolicy || !dataStorage) {
+      alert('Необходимо согласие со всеми условиями');
+      return;
+    }
+    
+    const userData = {
+      name: name,
+      email: email
+    };
+    
+    login(userData);
+    alert('Регистрация прошла успешно! Вы вошли в систему.');
+  });
 
   // Навигация
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.nav-btn');
-    if(!btn) return;
-    const page = btn.dataset.page;
-    if(page) setPage(page);
+    if(btn) {
+      const page = btn.dataset.page;
+      if(page) setPage(page);
+    }
   });
 
-  const brandElement = document.getElementById('brand');
-  if (brandElement) {
-    brandElement.addEventListener('click', () => setPage('home'));
-    brandElement.addEventListener('keydown', (e) => { 
-      if(e.key === 'Enter') setPage('home'); 
-    });
-  }
+  document.getElementById('brand').addEventListener('click', () => setPage('home'));
+  document.getElementById('brand').addEventListener('keydown', (e) => { 
+    if(e.key === 'Enter') setPage('home'); 
+  });
 
-  function checkAuth() {
-    const savedAuth = getCurrentUser();
-    if (savedAuth && savedAuth.access_token) {
-      state.isAuthenticated = true;
-      state.userData = savedAuth;
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAuthModal();
     }
-    renderAuth();
-  }
+  });
 
-  // Инициализация
   checkAuth();
   setPage(state.currentPage);
 
-  // Экспорт для глобального доступа
-  window.appHeader = { 
-    state, 
-    setPage, 
-    renderAuth, 
-    openAuthModal,
-    closeAuthModal,
-    login,
-    logout
-  };
-})();
+  window.appHeader = { state, setPage, renderAuth };
+});
 </script>
 </body>
 </html>
