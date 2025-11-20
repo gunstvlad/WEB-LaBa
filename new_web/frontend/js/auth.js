@@ -228,6 +228,8 @@ class AuthManager {
                 body: JSON.stringify(payload)
             });
 
+            console.log('🔐 AUTH: Ответ регистрации', resp.status);
+
             if (!resp.ok) {
                 // Попытка аккуратно показать причину (422 -> JSON с detail)
                 let message = `Ошибка регистрации: ${resp.status}`;
