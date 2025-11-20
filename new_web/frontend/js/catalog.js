@@ -6,6 +6,9 @@ class CatalogManager {
     console.log('📚 CATALOG: Инициализация CatalogManager');
     this.apiBase = 'http://localhost:8001/api';
     this.products = [];
+    this.currentCategory = 'all';
+    this.searchQuery = '';
+    
     this.init();
   }
 
@@ -16,161 +19,123 @@ class CatalogManager {
 
   async loadProducts() {
     try {
+      console.log('📚 CATALOG: Загрузка товаров из API...');
       const response = await fetch(`${this.apiBase}/products`);
+      
       if (response.ok) {
         this.products = await response.json();
+        console.log('📚 CATALOG: Успешно загружено товаров:', this.products.length);
         this.renderProducts();
       } else {
-        console.error('Ошибка загрузки товаров');
-        // Fallback на локальные товары если API недоступно
-        this.loadLocalProducts();
+        console.error('❌ CATALOG: Ошибка загрузки товаров:', response.status);
+        this.showError('Не удалось загрузить товары. Попробуйте обновить страницу.');
       }
     } catch (error) {
-      console.error('Ошибка сети:', error);
-      this.loadLocalProducts();
+      console.error('❌ CATALOG: Ошибка сети:', error);
+      this.showError('Ошибка соединения. Проверьте подключение к интернету.');
     }
   }
 
-  loadLocalProducts() {
-    // Fallback данные на случай недоступности API
-    this.products = [
-      {
-        id: 1,
-        name: "Диван Aurora",
-        price: 89900,
-        description: "Элегантный диван с высокой спинкой и удобными подлокотниками.",
-        category: "sofa",
-        image_url: "./img/sofa1.png",
-        in_stock: true
-      },
-      {
-        id: 2,
-        name: "Диван Luna",
-        price: 124500,
-        description: "Роскошный диван премиум-класса с механизмом трансформации.",
-        category: "sofa", 
-        image_url: "./img/sofa2.png",
-        in_stock: true
-      },
-      {
-        id: 3,
-        name: "Диван Cosmo",
-        price: 76300,
-        description: "Стильный трехместный диван в современном стиле.",
-        category: "sofa",
-        image_url: "./img/sofa3.png",
-        in_stock: true
-      },
-      {
-        id: 4,
-        name: "Шкаф-купе Milano",
-        price: 45200,
-        description: "Вместительный шкаф-купе с зеркальными дверями.",
-        category: "wardrobe",
-        image_url: "./img/wardrobe1.png",
-        in_stock: true
-      },
-      {
-        id: 5,
-        name: "Шкаф классический Vienna",
-        price: 38700,
-        description: "Классический распашной шкаф из массива дуба.",
-        category: "wardrobe",
-        image_url: "./img/wardrobe2.png",
-        in_stock: true
-      },
-      {
-        id: 6,
-        name: "Шкаф-гардеробная Modern",
-        price: 67900,
-        description: "Угловой шкаф-гардеробная с системой купэ.",
-        category: "wardrobe",
-        image_url: "./img/wardrobe3.png",
-        in_stock: false
-      },
-      {
-        id: 7,
-        name: "Кровать Valencia",
-        price: 68700,
-        description: "Кровать двуспальная с ортопедическим основанием.",
-        category: "bed",
-        image_url: "./img/bed1.png",
-        in_stock: true
-      },
-      {
-        id: 8,
-        name: "Кровать Oslo",
-        price: 52400,
-        description: "Минималистичная кровать из натурального дерева.",
-        category: "bed",
-        image_url: "./img/bed2.png",
-        in_stock: true
-      },
-      {
-        id: 9,
-        name: "Кровать Imperial",
-        price: 95800,
-        description: "Роскошная кровать с высоким мягким изголовьем.",
-        category: "bed",
-        image_url: "./img/bed3.png",
-        in_stock: true
-      }
-    ];
-    this.renderProducts();
-  }
-
   renderProducts() {
-    const container = document.getElementById('products-container');
+    const container = document.getElementById('productsGrid');
     if (!container) {
-      console.warn('📚 CATALOG: products-container не найден');
+      console.error('❌ CATALOG: Контейнер productsGrid не найден');
       return;
     }
 
     container.innerHTML = '';
 
     if (this.products.length === 0) {
-      container.innerHTML = '<div class="no-products">Товары не найдены</div>';
+      container.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--muted);">
+          <h3>Товары не найдены</h3>
+          <p>Попробуйте изменить поисковый запрос или выбрать другую категорию</p>
+        </div>
+      `;
       return;
     }
 
-    this.products.forEach(product => {
-      const productElement = document.createElement('div');
-      productElement.className = 'product-card';
-      productElement.innerHTML = `
+    // Фильтруем товары по категории и поисковому запросу
+    let filteredProducts = this.products;
+    
+    // Фильтрация по категории
+    if (this.currentCategory !== 'all') {
+      filteredProducts = filteredProducts.filter(product => 
+        product.category === this.currentCategory
+      );
+    }
+    
+    // Фильтрация по поисковому запросу
+    if (this.searchQuery) {
+      filteredProducts = filteredProducts.filter(product => 
+        product.name.toLowerCase().includes(this.searchQuery) ||
+        (product.description && product.description.toLowerCase().includes(this.searchQuery))
+      );
+    }
+
+    // Обновляем счетчик найденных товаров
+    this.updateSearchResults(filteredProducts.length);
+
+    // Рендерим отфильтрованные товары
+    filteredProducts.forEach(product => {
+      const productCard = document.createElement('div');
+      productCard.className = 'product-card';
+      
+      productCard.innerHTML = `
         <div class="product-image">
-          <img src="${product.image_url || './img/placeholder.jpg'}" 
-               alt="${product.name}" 
-               onerror="this.src='./img/placeholder.jpg'">
+          <img src="${this.fixImageUrl(product.image_url)}" alt="${product.name}" 
+               onerror="this.onerror=null; this.src='./img/placeholder.jpg';">
           ${!product.in_stock ? '<div class="out-of-stock">Нет в наличии</div>' : ''}
         </div>
-        <div class="product-info">
-          <h3 class="product-name">${product.name}</h3>
-          <p class="product-description">${product.description ? product.description.substring(0, 100) + '...' : ''}</p>
+        <div class="product-content">
+          <h3 class="product-title">${product.name}</h3>
           <div class="product-price">${product.price.toLocaleString('ru-RU')} ₽</div>
+          <p class="product-description">${product.description ? this.truncateDescription(product.description) : ''}</p>
           <div class="product-actions">
-            <button class="add-to-cart-btn" 
-                    data-product-id="${product.id}"
+            <button class="product-more" data-product-id="${product.id}">Подробнее</button>
+            <button class="product-add-to-cart" data-product-id="${product.id}" 
                     ${!product.in_stock ? 'disabled' : ''}>
               ${!product.in_stock ? 'Нет в наличии' : 'В корзину'}
-            </button>
-            <button class="view-details-btn" data-product-id="${product.id}">
-              Подробнее
             </button>
           </div>
         </div>
       `;
-      container.appendChild(productElement);
+      
+      container.appendChild(productCard);
     });
 
     this.attachProductEvents();
   }
 
+  truncateDescription(description, maxLength = 100) {
+    if (description.length <= maxLength) return description;
+    return description.substring(0, maxLength) + '...';
+  }
+
+  fixImageUrl(imageUrl) {
+    if (!imageUrl) return './img/placeholder.jpg';
+    
+    if (imageUrl.startsWith('/')) {
+      return '.' + imageUrl;
+    }
+    
+    if (imageUrl.startsWith('./')) {
+      return imageUrl;
+    }
+    
+    if (!imageUrl.startsWith('http') && !imageUrl.startsWith('./') && !imageUrl.startsWith('/')) {
+      return './' + imageUrl;
+    }
+    
+    return imageUrl;
+  }
+
   attachProductEvents() {
     // Обработчики для кнопок "В корзину"
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    document.querySelectorAll('.product-add-to-cart').forEach(btn => {
       btn.addEventListener('click', async (e) => {
-        const productId = e.target.dataset.productId;
-        const product = this.products.find(p => p.id == productId);
+        const productId = parseInt(e.target.dataset.productId);
+        const product = this.products.find(p => p.id === productId);
         
         if (product && !product.in_stock) {
           alert('Этот товар временно отсутствует в наличии');
@@ -179,11 +144,12 @@ class CatalogManager {
 
         // Проверяем доступность корзины
         if (typeof window.cart === 'undefined') {
-          console.error('❌ Корзина не доступна');
+          console.error('❌ CATALOG: Корзина не доступна');
           alert('Система корзины не загружена. Пожалуйста, обновите страницу.');
           return;
         }
 
+        const originalText = e.target.textContent;
         e.target.textContent = 'Добавляем...';
         e.target.disabled = true;
 
@@ -193,16 +159,16 @@ class CatalogManager {
           if (success) {
             e.target.textContent = '✓ В корзине';
             setTimeout(() => {
-              e.target.textContent = 'В корзину';
+              e.target.textContent = originalText;
               e.target.disabled = false;
             }, 2000);
           } else {
-            e.target.textContent = 'В корзину';
+            e.target.textContent = originalText;
             e.target.disabled = false;
           }
         } catch (error) {
-          console.error('Ошибка при добавлении в корзину:', error);
-          e.target.textContent = 'В корзину';
+          console.error('❌ CATALOG: Ошибка при добавлении в корзину:', error);
+          e.target.textContent = originalText;
           e.target.disabled = false;
           alert('Произошла ошибка при добавлении в корзину');
         }
@@ -210,62 +176,63 @@ class CatalogManager {
     });
 
     // Обработчики для кнопок "Подробнее"
-    document.querySelectorAll('.view-details-btn').forEach(btn => {
+    document.querySelectorAll('.product-more').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const productId = e.target.dataset.productId;
+        const productId = parseInt(e.target.dataset.productId);
         this.showProductDetails(productId);
       });
     });
   }
 
   showProductDetails(productId) {
-    const product = this.products.find(p => p.id == productId);
+    const product = this.products.find(p => p.id === productId);
     if (product) {
-      // Открываем модальное окно с деталями товара
       this.openProductModal(product);
     }
   }
 
   openProductModal(product) {
-    // Создаем модальное окно для товара
-    const modal = document.createElement('div');
-    modal.className = 'product-modal-overlay';
-    modal.innerHTML = `
-      <div class="product-modal">
-        <button class="modal-close">&times;</button>
-        <div class="modal-content">
-          <div class="modal-image">
-            <img src="${product.image_url || './img/placeholder.jpg'}" alt="${product.name}">
-          </div>
-          <div class="modal-info">
-            <h2>${product.name}</h2>
-            <div class="modal-price">${product.price.toLocaleString('ru-RU')} ₽</div>
-            <p class="modal-description">${product.description}</p>
-            <div class="modal-actions">
-              <button class="add-to-cart-modal-btn" data-product-id="${product.id}">
-                ${product.in_stock ? 'Добавить в корзину' : 'Нет в наличии'}
-              </button>
-            </div>
-          </div>
+    // Используем существующее модальное окно из HTML
+    const modal = document.getElementById('productModal');
+    const modalContent = document.getElementById('modalContent');
+    
+    if (!modal || !modalContent) {
+      console.error('❌ CATALOG: Модальное окно не найдено');
+      return;
+    }
+
+    modalContent.innerHTML = `
+      <div class="modal-image">
+        <img src="${this.fixImageUrl(product.image_url)}" alt="${product.name}">
+      </div>
+      <div class="modal-info">
+        <div class="modal-header">
+          <h2 class="modal-title">${product.name}</h2>
+          <div class="modal-price">${product.price.toLocaleString('ru-RU')} ₽</div>
+          <p class="modal-description">${product.description || 'Описание отсутствует'}</p>
+        </div>
+        
+        <div class="modal-features">
+          <h3 class="features-title">Характеристики</h3>
+          <ul class="features-list">
+            <li class="feature-item">Категория: ${this.getCategoryName(product.category)}</li>
+            <li class="feature-item">Наличие: ${product.in_stock ? 'В наличии' : 'Нет в наличии'}</li>
+            ${product.features ? product.features.map(feature => `<li class="feature-item">${feature}</li>`).join('') : ''}
+          </ul>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn-primary" id="modalAddToCart" data-product-id="${product.id}" 
+                  ${!product.in_stock ? 'disabled' : ''}>
+            ${product.in_stock ? 'Добавить в корзину' : 'Нет в наличии'}
+          </button>
+          <button class="btn-secondary">В избранное</button>
         </div>
       </div>
     `;
 
-    document.body.appendChild(modal);
-
-    // Обработчики для модального окна
-    modal.querySelector('.modal-close').addEventListener('click', () => {
-      modal.remove();
-    });
-
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.remove();
-      }
-    });
-
     // Обработчик для кнопки в модальном окне
-    const addToCartBtn = modal.querySelector('.add-to-cart-modal-btn');
+    const addToCartBtn = document.getElementById('modalAddToCart');
     if (addToCartBtn && product.in_stock) {
       addToCartBtn.addEventListener('click', async () => {
         if (typeof window.cart === 'undefined') {
@@ -273,6 +240,7 @@ class CatalogManager {
           return;
         }
 
+        const originalText = addToCartBtn.textContent;
         addToCartBtn.textContent = 'Добавляем...';
         addToCartBtn.disabled = true;
 
@@ -281,97 +249,125 @@ class CatalogManager {
           if (success) {
             addToCartBtn.textContent = '✓ Добавлено!';
             setTimeout(() => {
-              modal.remove();
+              this.closeProductModal();
             }, 1500);
           } else {
-            addToCartBtn.textContent = 'Добавить в корзину';
+            addToCartBtn.textContent = originalText;
             addToCartBtn.disabled = false;
           }
         } catch (error) {
-          addToCartBtn.textContent = 'Добавить в корзину';
+          addToCartBtn.textContent = originalText;
           addToCartBtn.disabled = false;
         }
       });
     }
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeProductModal() {
+    const modal = document.getElementById('productModal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+  }
+
+  getCategoryName(category) {
+    const categoryNames = {
+      'sofa': 'Диваны',
+      'wardrobe': 'Шкафы',
+      'bed': 'Кровати'
+    };
+    return categoryNames[category] || category;
   }
 
   setupEventListeners() {
-    // Фильтрация по категориям
-    const filterButtons = document.querySelectorAll('.category-filter');
-    filterButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    // Фильтрация по категориям через вкладки
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
         const category = e.target.dataset.category;
         this.filterByCategory(category);
         
-        // Обновляем активную кнопку
-        filterButtons.forEach(b => b.classList.remove('active'));
+        // Обновляем активную вкладку
+        tabs.forEach(t => t.classList.remove('active'));
         e.target.classList.add('active');
       });
     });
 
     // Поиск товаров
-    const searchInput = document.getElementById('search-input');
+    const searchInput = document.getElementById('searchInput');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         this.searchProducts(e.target.value);
       });
     }
+
+    // Закрытие модального окна
+    const modalClose = document.getElementById('modalClose');
+    const productModal = document.getElementById('productModal');
+    
+    if (modalClose) {
+      modalClose.addEventListener('click', () => {
+        this.closeProductModal();
+      });
+    }
+    
+    if (productModal) {
+      productModal.addEventListener('click', (e) => {
+        if (e.target === productModal) {
+          this.closeProductModal();
+        }
+      });
+    }
+
+    // Закрытие по ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeProductModal();
+      }
+    });
   }
 
   filterByCategory(category) {
-    if (category === 'all') {
-      this.renderProducts();
-    } else {
-      const filtered = this.products.filter(product => product.category === category);
-      this.renderFilteredProducts(filtered);
-    }
+    this.currentCategory = category;
+    this.renderProducts();
   }
 
   searchProducts(query) {
-    const filtered = this.products.filter(product => 
-      product.name.toLowerCase().includes(query.toLowerCase()) ||
-      (product.description && product.description.toLowerCase().includes(query.toLowerCase()))
-    );
-    this.renderFilteredProducts(filtered);
+    this.searchQuery = query.toLowerCase().trim();
+    this.renderProducts();
   }
 
-  renderFilteredProducts(filteredProducts) {
-    const container = document.getElementById('products-container');
-    if (!container) return;
-
-    if (filteredProducts.length === 0) {
-      container.innerHTML = '<div class="no-products">Товары не найдены</div>';
-      return;
+  updateSearchResults(count) {
+    const searchResults = document.getElementById('searchResults');
+    const searchCount = document.getElementById('searchCount');
+    
+    if (searchResults && searchCount) {
+      if (this.searchQuery) {
+        searchResults.classList.remove('hidden');
+        searchCount.textContent = count;
+      } else {
+        searchResults.classList.add('hidden');
+      }
     }
+  }
 
-    container.innerHTML = '';
-    filteredProducts.forEach(product => {
-      const productElement = document.createElement('div');
-      productElement.className = 'product-card';
-      productElement.innerHTML = `
-        <div class="product-image">
-          <img src="${product.image_url || './img/placeholder.jpg'}" 
-               alt="${product.name}" 
-               onerror="this.src='./img/placeholder.jpg'">
-          ${!product.in_stock ? '<div class="out-of-stock">Нет в наличии</div>' : ''}
-        </div>
-        <div class="product-info">
-          <h3 class="product-name">${product.name}</h3>
-          <p class="product-description">${product.description ? product.description.substring(0, 100) + '...' : ''}</p>
-          <div class="product-price">${product.price.toLocaleString('ru-RU')} ₽</div>
-          <div class="product-actions">
-            <button class="add-to-cart-btn" 
-                    data-product-id="${product.id}"
-                    ${!product.in_stock ? 'disabled' : ''}>
-              ${!product.in_stock ? 'Нет в наличии' : 'В корзину'}
-            </button>
-          </div>
+  showError(message) {
+    const container = document.getElementById('productsGrid');
+    if (container) {
+      container.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--muted);">
+          <h3>Ошибка загрузки</h3>
+          <p>${message}</p>
+          <button onclick="window.catalog.loadProducts()" style="margin-top: 16px; padding: 10px 20px; background: var(--brand-red); color: white; border: none; border-radius: 6px; cursor: pointer;">
+            Попробовать снова
+          </button>
         </div>
       `;
-      container.appendChild(productElement);
-    });
-
-    this.attachProductEvents();
+    }
   }
 }
 
