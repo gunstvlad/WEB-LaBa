@@ -389,58 +389,51 @@
 
 <script src="js/auth.js"></script>
 <script>
-// Данные отзывов
-const reviewsData = [
-  {
-    id: 1,
-    author: "Екатерина Смирнова",
-    date: "15 января 2025",
-    rating: "★★★★★",
-    text: "Заказывали кухонный гарнитур. Остались очень довольны! Качество материалов на высоте, сборка быстрая и аккуратная. Дизайнер помогла подобрать идеальное решение для нашей небольшой кухни.",
-    avatar: "./img/review1.jpg"
-  },
-  {
-    id: 2,
-    author: "Дмитрий Волков",
-    date: "8 января 2025",
-    rating: "★★★★★",
-    text: "Приобрели диван в гостиную. Прекрасное качество, удобная конструкция, доставка вовремя. Особенно порадовала вежливость сборщиков - работали чисто и профессионально.",
-    avatar: "./img/review2.jpg"
-  },
-  {
-    id: 3,
-    author: "Анна Козлова",
-    date: "3 января 2025",
-    rating: "★★★★☆",
-    text: "Заказывали детскую мебель. Ребёнок в восторге! Всё сделано без острых углов, использованы безопасные материалы. Небольшая задержка по срокам, но в целом рекомендую.",
-    avatar: "./img/review3.jpg"
-  },
-  {
-    id: 4,
-    author: "Сергей Николаев",
-    date: "28 декабря 2024",
-    rating: "★★★★★",
-    text: "Отличный шкаф-купе! Вместительный, бесшумные раздвижные двери, качественная фурнитура. Сборка заняла всего 2 часа. Буду рекомендовать вашу компанию друзьям!",
-    avatar: "./img/review4.jpg"
-  },
-  {
-    id: 5,
-    author: "Ольга Петрова",
-    date: "20 декабря 2024",
-    rating: "★★★★★",
-    text: "Второй раз обращаюсь в этот магазин. В этот раз покупали журнальный столик и тумбу под ТВ. Всё идеально вписалось в интерьер. Качество как всегда на высоте!",
-    avatar: "./img/review5.jpg"
-  }
-];
 
 // Инициализация слайдера
-function initReviewsSlider() {
+async function initReviewsSlider() {
   const track = document.getElementById('reviewsTrack');
   const dotsContainer = document.getElementById('sliderDots');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   
+  let reviewsData = [];
   let currentSlide = 0;
+  
+  try {
+    // Загружаем отзывы с бэкенда
+    const response = await fetch('http://localhost:8001/api/reviews');
+    if (response.ok) {
+      reviewsData = await response.json();
+    } else {
+      console.error('Ошибка при загрузке отзывов');
+    }
+  } catch (error) {
+    console.error('Ошибка при загрузке отзывов:', error);
+  }
+  
+  // Если нет отзывов, покажем заглушку
+  if (reviewsData.length === 0) {
+    track.innerHTML = '<div class="review-slide"><p>Пока нет отзывов. Будьте первым!</p></div>';
+    dotsContainer.innerHTML = '';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    return;
+  }
+  
+  // Функция для преобразования рейтинга в звёзды
+  function getRatingStars(rating) {
+    const fullStar = '★';
+    const emptyStar = '☆';
+    return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
+  }
+  
+  // Функция для форматирования даты
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('ru-RU', options);
+  }
   
   // Создание слайдов
   function createSlides() {
@@ -453,13 +446,15 @@ function initReviewsSlider() {
       slide.className = 'review-slide';
       slide.innerHTML = `
         <div class="review-header">
-          <img src="${review.avatar}" alt="${review.author}" class="review-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNkNzcyNzIiLz4KPHN2ZyB4PSIxMiIgeT0iMTUiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI2IDIwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTMgMTVDMTMgMTIuNzkwOSAxNC43OTA5IDExIDE3IDExQzE5LjIwOTEgMTEgMjEgMTIuNzkwOSAyMSAxNUMxNS42ODYzIDE1IDEzIDE1IDEzIDE1WiIgZmlsbD0id2hpdGUiLz4KPGNpcmNsZSBjeD0iMTciIGN5PSI4IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+'">
+          <div class="review-avatar" style="background-color: #d77272; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">
+            ${review.user_name.charAt(0)}
+          </div>
           <div class="review-info">
-            <h4 class="review-author">${review.author}</h4>
-            <p class="review-date">${review.date}</p>
+            <h4 class="review-author">${review.user_name}</h4>
+            <p class="review-date">${formatDate(review.created_at)}</p>
           </div>
         </div>
-        <div class="review-rating">${review.rating}</div>
+        <div class="review-rating">${getRatingStars(review.rating)}</div>
         <p class="review-text">${review.text}</p>
       `;
       track.appendChild(slide);

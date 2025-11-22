@@ -114,6 +114,75 @@
   </div>
 </footer>
 
+<div class="auth-modal-overlay" id="authModal">
+  <div class="auth-modal">
+    <div class="auth-modal-header">
+      <button class="auth-modal-tab active" data-tab="login">Вход</button>
+      <button class="auth-modal-tab" data-tab="register">Регистрация</button>
+    </div>
+    
+    <div class="auth-modal-content">
+      <!-- Форма входа -->
+      <form id="loginForm" style="display: block;">
+        <div class="form-group">
+          <label for="loginEmail" class="form-label">Email</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="example@mail.ru" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="loginPassword" class="form-label">Пароль</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="Введите пароль" required>
+        </div>
+        
+        <button type="submit" class="form-submit">Войти</button>
+      </form>
+
+      <form id="registerForm" style="display: none;">
+        <div class="form-group">
+          <label for="registerName" class="form-label">ФИО</label>
+          <input type="text" id="registerName" class="form-input" placeholder="Иван Иванов" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerPhone" class="form-label">Телефон</label>
+          <input type="tel" id="registerPhone" class="form-input" placeholder="+7 (900) 000-00-00">
+        </div>
+        
+        <div class="form-group">
+          <label for="registerEmail" class="form-label">Email</label>
+          <input type="email" id="registerEmail" class="form-input" placeholder="example@mail.ru" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerPassword" class="form-label">Пароль</label>
+          <input type="password" id="registerPassword" class="form-input" placeholder="Придумайте пароль" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerConfirmPassword" class="form-label">Подтвердите пароль</label>
+          <input type="password" id="registerConfirmPassword" class="form-input" placeholder="Повторите пароль" required>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="privacyPolicy" class="checkbox" required>
+          <label for="privacyPolicy" class="checkbox-label">
+            Я соглашаюсь с <a href="#">политикой конфиденциальности</a> и даю согласие на обработку персональных данных
+          </label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="dataStorage" class="checkbox" required>
+          <label for="dataStorage" class="checkbox-label">
+            Я соглашаюсь на хранение и обработку моих персональных данных
+          </label>
+        </div>
+        
+        <button type="submit" class="form-submit">Зарегистрироваться</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script src="js/auth.js"></script>
 <script src="js/cart.js"></script>
 </body>

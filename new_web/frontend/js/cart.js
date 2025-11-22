@@ -35,7 +35,7 @@ class CartManager {
     const checkoutBtn = document.getElementById('checkout-btn');
     if (checkoutBtn) {
       checkoutBtn.addEventListener('click', () => {
-        this.checkout();
+        this.handleCheckout();
       });
     }
   }
@@ -51,6 +51,86 @@ class CartManager {
     if (confirm('Вы уверены, что хотите очистить корзину? Все товары будут удалены.')) {
       await this.clearCart();
     }
+  }
+
+  async handleCheckout() {
+  console.log('🛒 CART: Начинаем оформление заказа');
+  
+  if (this.cartItems.length === 0) {
+    alert('Корзина пуста');
+    return;
+  }
+
+  if (!window.auth || !window.auth.isUserAuthenticated()) {
+    alert('Для оформления заказа необходимо войти в систему');
+    window.auth.openAuthModal();
+    return;
+  }
+
+  // Подтверждение оформления заказа
+  if (!confirm(`Оформить заказ на сумму ${this.calculateTotal().toLocaleString('ru-RU')} ₽?`)) {
+    return;
+  }
+
+  try {
+    const token = this.getAuthToken();
+    if (!token) {
+      alert('Ошибка авторизации');
+      return;
+    }
+
+    // Создаем заказ БЕЗ дополнительных данных
+    const orderData = {
+      items: this.cartItems.map(item => ({
+        product_id: item.product_id,
+        quantity: item.quantity
+      }))
+      // shipping_address и phone_number больше не требуются
+    };
+
+    const response = await fetch(`${this.apiBase}/orders/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    if (response.ok) {
+      const order = await response.json();
+      console.log('✅ CART: Заказ успешно создан', order);
+      
+      // Очищаем корзину после успешного оформления
+      await this.clearCart();
+      
+      // Показываем подтверждение
+      alert(`Заказ #${order.id} успешно оформлен!\nСумма: ${order.total_amount} ₽\nСтатус: ${this.getOrderStatusText(order.status)}\n\nСпасибо за покупку!`);
+      
+      // Обновляем страницу профиля если она открыта
+      if (window.profileManager) {
+        window.profileManager.loadOrders();
+      }
+    } else {
+      const error = await response.json();
+      console.error('❌ CART: Ошибка создания заказа', error);
+      alert(`Ошибка оформления заказа: ${error.detail || 'Неизвестная ошибка'}`);
+    }
+  } catch (error) {
+    console.error('❌ CART: Ошибка сети при оформлении заказа', error);
+    alert('Ошибка сети при оформлении заказа');
+  }
+}
+
+  getOrderStatusText(status) {
+    const statusMap = {
+      'pending': 'Ожидает подтверждения',
+      'confirmed': 'Подтвержден',
+      'shipped': 'Отправлен',
+      'delivered': 'Доставлен',
+      'cancelled': 'Отменен'
+    };
+    return statusMap[status] || status;
   }
 
   async addToCart(productId, quantity = 1) {
@@ -314,17 +394,6 @@ class CartManager {
     }
   }
 
-  checkout() {
-    if (this.cartItems.length === 0) {
-      alert('Корзина пуста');
-      return;
-    }
-
-    const total = this.calculateTotal();
-    alert(`Заказ оформлен! Сумма заказа: ${total.toLocaleString('ru-RU')} ₽\nСпасибо за покупку!`);
-    this.clearCart();
-  }
-
   calculateTotal() {
     return this.cartItems.reduce((total, item) => {
       const price = Number(item.product?.price || 0);
@@ -347,32 +416,31 @@ class CartManager {
     if (totalElement) totalElement.textContent = `${total.toLocaleString('ru-RU')} ₽`;
   }
 
-  // В cart.js замените функцию getAuthToken на:
-getAuthToken() {
-  // Используем глобальный объект auth если доступен
-  if (window.auth && window.auth.getAuthToken) {
-    const token = window.auth.getAuthToken();
-    console.log('🛒 CART: Токен из auth manager:', token ? 'есть' : 'нет');
-    return token;
+  getAuthToken() {
+    // Используем глобальный объект auth если доступен
+    if (window.auth && window.auth.getAuthToken) {
+      const token = window.auth.getAuthToken();
+      console.log('🛒 CART: Токен из auth manager:', token ? 'есть' : 'нет');
+      return token;
+    }
+    
+    // Fallback на localStorage
+    const raw = localStorage.getItem('mebeldom_auth');
+    if (!raw) {
+      console.log('🛒 CART: Токен не найден в localStorage');
+      return null;
+    }
+    
+    try {
+      const user = JSON.parse(raw);
+      const token = user.token || user.access_token;
+      console.log('🛒 CART: Токен из localStorage:', token ? 'есть' : 'нет');
+      return token;
+    } catch {
+      console.log('🛒 CART: Ошибка парсинга токена из localStorage');
+      return null;
+    }
   }
-  
-  // Fallback на localStorage
-  const raw = localStorage.getItem('mebeldom_auth');
-  if (!raw) {
-    console.log('🛒 CART: Токен не найден в localStorage');
-    return null;
-  }
-  
-  try {
-    const user = JSON.parse(raw);
-    const token = user.token || user.access_token;
-    console.log('🛒 CART: Токен из localStorage:', token ? 'есть' : 'нет');
-    return token;
-  } catch {
-    console.log('🛒 CART: Ошибка парсинга токена из localStorage');
-    return null;
-  }
-}
 
   showNotification(message) {
     const existingNotifications = document.querySelectorAll('.cart-notification');
@@ -818,5 +886,5 @@ getAuthToken() {
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🛒 CART: DOM загружен, создаем CartManager');
-  window.cart = new CartManager();
+  window.cartManager = new CartManager();
 });

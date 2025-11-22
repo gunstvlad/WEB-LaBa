@@ -24,15 +24,14 @@ app.add_middleware(
 async def options_handler():
     return JSONResponse(status_code=200, content={})
 
-# Ваши остальные роутеры...
 from .routers import users, products, cart, reviews, auth
 
+app.include_router(auth.router, prefix="/api", tags=["auth"])
 app.include_router(users.router, prefix="/api", tags=["users"])
 app.include_router(products.router, prefix="/api", tags=["products"])
 app.include_router(cart.router, prefix="/api", tags=["cart"])
 app.include_router(reviews.router, prefix="/api", tags=["reviews"])
-app.include_router(auth.router)
-app.include_router(cart.router, prefix="/api")
+
 
 @app.get("/")
 def read_root():

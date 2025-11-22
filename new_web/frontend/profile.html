@@ -5,9 +5,33 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Профиль — Мебельный Дом</title>
 <link rel="stylesheet" href="css/profile.css">
+<style>
+  /* Стили для уведомлений */
+  .auth-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--brand-red);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 4px;
+    z-index: 10000;
+    animation: slideInRight 0.3s ease;
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+</style>
 </head>
 <body>
-
 <header class="site-header" role="banner">
   <div class="container">
     <div class="top-row">
@@ -36,6 +60,7 @@
       <a href="catalog.html" class="nav-btn" data-page="catalog">Каталог</a>
       <a href="contacts.html" class="nav-btn" data-page="contacts">Контакты</a>
       <a href="profile.html" class="nav-btn" data-page="profile" aria-current="page">Профиль</a>
+      <a href="cart.html" class="nav-btn" data-page="cart">Корзина</a>
     </nav>
   </div>
 </header>
@@ -66,21 +91,16 @@
 
       <div class="profile-section">
         <h3 class="section-title">Последние заказы</h3>
-        <ul class="order-list">
-          <li class="order-item">
-            <strong>Заказ #12345</strong> - Диван Aurora<br>
-            <small>Статус: Доставлен • 15.01.2024</small>
-          </li>
-          <li class="order-item">
-            <strong>Заказ #12344</strong> - Кровать Valencia<br>
-            <small>Статус: В обработке • 10.01.2024</small>
-          </li>
-        </ul>
+        <div id="ordersList" class="orders-list">
+          <!-- Заказы будут загружены через JavaScript -->
+        </div>
       </div>
 
       <div class="profile-section">
         <h3 class="section-title">Избранные товары</h3>
-        <p style="color: var(--muted);">У вас пока нет избранных товаров</p>
+        <div id="wishlistContainer" class="wishlist-container">
+          <!-- Избранные товары будут загружены через JavaScript -->
+        </div>
       </div>
 
       <button class="logout-btn" id="logoutBtn">Выйти из аккаунта</button>
@@ -88,15 +108,15 @@
   </div>
 </main>
 
-<!-- Модальное окно входа/регистрации -->
-<div class="modal-overlay" id="authModal" style="display: none;">
-  <div class="modal">
-    <div class="modal-header">
-      <button class="modal-tab active" data-tab="login">Вход</button>
-      <button class="modal-tab" data-tab="register">Регистрация</button>
+<!-- Модальное окно авторизации -->
+<div class="auth-modal-overlay" id="authModal">
+  <div class="auth-modal">
+    <div class="auth-modal-header">
+      <button class="auth-modal-tab active" data-tab="login">Вход</button>
+      <button class="auth-modal-tab" data-tab="register">Регистрация</button>
     </div>
     
-    <div class="modal-content">
+    <div class="auth-modal-content">
       <!-- Форма входа -->
       <form id="loginForm" style="display: block;">
         <div class="form-group">
@@ -111,17 +131,16 @@
         
         <button type="submit" class="form-submit">Войти</button>
       </form>
-      
-      <!-- Форма регистрации -->
+
       <form id="registerForm" style="display: none;">
         <div class="form-group">
           <label for="registerName" class="form-label">ФИО</label>
           <input type="text" id="registerName" class="form-input" placeholder="Иван Иванов" required>
         </div>
-
+        
         <div class="form-group">
           <label for="registerPhone" class="form-label">Телефон</label>
-          <input type="tel" id="registerPhone" class="form-input" placeholder="+7 (900) 000-00-00" required>
+          <input type="tel" id="registerPhone" class="form-input" placeholder="+7 (900) 000-00-00">
         </div>
         
         <div class="form-group">
@@ -169,223 +188,360 @@
   </div>
 </footer>
 
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
 <script>
-(function(){
-  const authControls = document.getElementById('authControls');
-  const loginPrompt = document.getElementById('loginPrompt');
-  const loginBtn = document.getElementById('loginBtn');
-  const userProfile = document.getElementById('userProfile');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const userName = document.getElementById('userName');
-  const userEmail = document.getElementById('userEmail');
-  const userAvatar = document.getElementById('userAvatar');
-  
-  // Модальное окно
-  const authModal = document.getElementById('authModal');
-  const modalTabs = document.querySelectorAll('.modal-tab');
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-
-  let state = {
-    isAuthenticated: false,
-    userData: null
-  };
-
-  // Проверяем авторизацию
-  function checkAuth() {
-    const savedAuth = localStorage.getItem('mebeldom_auth');
-    if (savedAuth) {
-      state.isAuthenticated = true;
-      state.userData = JSON.parse(savedAuth);
-    }
-    updateUI();
+// Менеджер профиля
+class ProfileManager {
+  constructor() {
+    this.apiBase = 'http://localhost:8001/api';
+    this.init();
   }
 
-  function updateUI() {
-    if (state.isAuthenticated) {
+  init() {
+    this.bindEvents();
+    this.loadProfileData();
+    
+    // Обновляем данные профиля при изменении авторизации
+    setInterval(() => {
+      if (window.auth && window.auth.isUserAuthenticated()) {
+        this.loadProfileData();
+      }
+    }, 3000);
+  }
+
+  bindEvents() {
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (loginBtn) {
+      loginBtn.addEventListener('click', () => {
+        if (window.auth) {
+          window.auth.openAuthModal();
+        }
+      });
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        if (window.auth) {
+          window.auth.logout();
+          this.updateProfileDisplay();
+        }
+      });
+    }
+  }
+
+  async loadProfileData() {
+    if (!window.auth || !window.auth.isUserAuthenticated()) {
+      this.updateProfileDisplay();
+      return;
+    }
+
+    try {
+      await Promise.all([
+        this.loadOrders(),
+        this.loadWishlist()
+      ]);
+      this.updateProfileDisplay();
+    } catch (error) {
+      console.error('Ошибка загрузки данных профиля:', error);
+    }
+  }
+
+  updateProfileDisplay() {
+    const loginPrompt = document.getElementById('loginPrompt');
+    const userProfile = document.getElementById('userProfile');
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    const userAvatar = document.getElementById('userAvatar');
+
+    if (window.auth && window.auth.isUserAuthenticated()) {
+      const userData = window.auth.getUserData();
+      
+      // Показываем профиль пользователя
       loginPrompt.style.display = 'none';
       userProfile.style.display = 'block';
       
-      // Обновляем данные пользователя
-      if (state.userData) {
-        userName.textContent = state.userData.name;
-        userEmail.textContent = state.userData.email;
-        userAvatar.textContent = getInitials(state.userData.name);
+      // Заполняем данные пользователя
+      if (userData) {
+        const displayName = userData.full_name || userData.name || 
+                           userData.email?.split('@')[0] || 'Пользователь';
+        userName.textContent = displayName;
+        userEmail.textContent = userData.email || 'Email не указан';
+        
+        // Обновляем аватар (первые буквы имени)
+        if (userData.full_name) {
+          const names = userData.full_name.split(' ');
+          const initials = names.map(name => name.charAt(0)).join('').toUpperCase();
+          userAvatar.textContent = initials;
+        } else {
+          userAvatar.textContent = displayName.charAt(0).toUpperCase();
+        }
       }
     } else {
+      // Показываем приглашение войти
       loginPrompt.style.display = 'block';
       userProfile.style.display = 'none';
     }
-    renderAuth();
   }
 
-  function getInitials(name) {
-    return name.split(' ').map(word => word[0]).join('').toUpperCase();
-  }
+  async loadOrders() {
+    const ordersList = document.getElementById('ordersList');
+    if (!ordersList) return;
 
-  function renderAuth(){
-    authControls.innerHTML = '';
-    if(state.isAuthenticated){
-      const name = document.createElement('span');
-      name.className = 'username';
-      name.textContent = state.userData?.name || 'Пользователь';
-      name.style.color = 'var(--brand-red)';
-      name.style.fontWeight = '600';
-      name.style.marginRight = '8px';
-
-      const btn = document.createElement('button');
-      btn.className = 'auth-ghost';
-      btn.textContent = 'Выйти';
-      btn.addEventListener('click', () => {
-        logout();
-      });
-
-      authControls.appendChild(name);
-      authControls.appendChild(btn);
-    } else {
-      const btn = document.createElement('button');
-      btn.className = 'auth-ghost';
-      btn.textContent = 'Войти';
-      btn.addEventListener('click', () => {
-        openAuthModal();
-      });
-      authControls.appendChild(btn);
-    }
-  }
-
-  function openAuthModal() {
-    authModal.style.display = 'flex';
-    // Сбрасываем формы
-    loginForm.reset();
-    registerForm.reset();
-    // Показываем форму входа по умолчанию
-    switchTab('login');
-  }
-
-  function closeAuthModal() {
-    authModal.style.display = 'none';
-  }
-
-  function switchTab(tabName) {
-    // Обновляем активные вкладки
-    modalTabs.forEach(tab => {
-      if (tab.dataset.tab === tabName) {
-        tab.classList.add('active');
-      } else {
-        tab.classList.remove('active');
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        ordersList.innerHTML = '<p style="color: var(--muted);">Для просмотра заказов необходимо войти в систему</p>';
+        return;
       }
-    });
-    
-    // Показываем соответствующую форму
-    if (tabName === 'login') {
-      loginForm.style.display = 'block';
-      registerForm.style.display = 'none';
-    } else {
-      loginForm.style.display = 'none';
-      registerForm.style.display = 'block';
+
+      const response = await fetch(`${this.apiBase}/orders/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const orders = await response.json();
+        this.renderOrders(orders);
+      } else {
+        ordersList.innerHTML = '<p style="color: var(--muted);">У вас пока нет заказов</p>';
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки заказов:', error);
+      ordersList.innerHTML = '<p style="color: var(--muted);">Ошибка загрузки заказов</p>';
     }
   }
 
-  function login(userData) {
-    state.isAuthenticated = true;
-    state.userData = userData;
-    localStorage.setItem('mebeldom_auth', JSON.stringify(userData));
-    updateUI();
-    closeAuthModal();
+  renderOrders(orders) {
+    const ordersContainer = document.getElementById('ordersList');
+    
+    if (!orders || orders.length === 0) {
+      ordersContainer.innerHTML = '<p style="color: var(--muted);">У вас пока нет заказов</p>';
+      return;
+    }
+
+    ordersContainer.innerHTML = orders.map(order => `
+      <div class="order-card">
+        <div class="order-header">
+          <div class="order-info">
+            <strong>Заказ #${order.id}</strong>
+            <span class="order-status ${order.status}">${this.getStatusText(order.status)}</span>
+          </div>
+          <div class="order-dates">
+            <small>Создан: ${new Date(order.created_at).toLocaleDateString('ru-RU')}</small>
+            <div class="order-total">${order.total_amount} ₽</div>
+          </div>
+        </div>
+        <div class="order-items">
+          ${order.items.map(item => `
+            <div class="order-item">
+              <span class="item-name">${item.product_name}</span>
+              <span class="item-quantity">${item.quantity} шт.</span>
+              <span class="item-price">${item.product_price} ₽</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="order-address">
+          <strong>Адрес доставки:</strong> ${order.shipping_address}
+        </div>
+      </div>
+    `).join('');
   }
 
-  function logout() {
-    state.isAuthenticated = false;
-    state.userData = null;
-    localStorage.removeItem('mebeldom_auth');
-    updateUI();
+  async loadWishlist() {
+    const wishlistContainer = document.getElementById('wishlistContainer');
+    if (!wishlistContainer) return;
+
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        wishlistContainer.innerHTML = '<p style="color: var(--muted);">Для просмотра избранного необходимо войти в систему</p>';
+        return;
+      }
+
+      const response = await fetch(`${this.apiBase}/wishlist/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const wishlist = await response.json();
+        this.renderWishlist(wishlist);
+      } else {
+        wishlistContainer.innerHTML = '<p style="color: var(--muted);">У вас пока нет избранных товаров</p>';
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки избранного:', error);
+      wishlistContainer.innerHTML = '<p style="color: var(--muted);">Ошибка загрузки избранного</p>';
+    }
   }
 
-  // Обработчики событий для модального окна
-  modalTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      switchTab(tab.dataset.tab);
-    });
-  });
-
-  // Закрытие модального окна при клике на оверлей
-  authModal.addEventListener('click', (e) => {
-    if (e.target === authModal) {
-      closeAuthModal();
-    }
-  });
-
-  // Обработка формы входа
-  loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+  renderWishlist(wishlist) {
+    const wishlistContainer = document.getElementById('wishlistContainer');
     
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    // Простая имитация входа (в реальном приложении был бы запрос к API)
-    if (email && password) {
-      const userData = {
-        name: email.split('@')[0],
-        email: email
-      };
-      
-      login(userData);
-      alert('Вы успешно вошли в систему!');
-    } else {
-      alert('Пожалуйста, заполните все поля');
-    }
-  });
-
-  // Обработка формы регистрации
-  registerForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('registerName').value;
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    const confirmPassword = document.getElementById('registerConfirmPassword').value;
-    const privacyPolicy = document.getElementById('privacyPolicy').checked;
-    const dataStorage = document.getElementById('dataStorage').checked;
-    
-    // Простая валидация
-    if (!name || !email || !password || !confirmPassword) {
-      alert('Пожалуйста, заполните все поля');
+    if (!wishlist || wishlist.length === 0) {
+      wishlistContainer.innerHTML = '<p style="color: var(--muted);">У вас пока нет избранных товаров</p>';
       return;
     }
-    
-    if (password !== confirmPassword) {
-      alert('Пароли не совпадают');
-      return;
+
+    wishlistContainer.innerHTML = `
+      <div class="wishlist-grid">
+        ${wishlist.map(product => `
+          <div class="wishlist-item" data-id="${product.id}">
+            <div class="wishlist-item-image">
+              <img src="${this.fixImageUrl(product.image_url)}" alt="${product.name}" 
+                   onerror="this.onerror=null; this.src='./img/placeholder.jpg';">
+            </div>
+            <div class="wishlist-item-info">
+              <h4 class="wishlist-item-name">${product.name}</h4>
+              <div class="wishlist-item-price">${product.price} ₽</div>
+              <div class="wishlist-item-category">${this.getCategoryName(product.category)}</div>
+            </div>
+            <div class="wishlist-item-actions">
+              <button class="wishlist-remove-btn" onclick="profileManager.removeFromWishlist(${product.id})">
+                ❌ Удалить
+              </button>
+              <button class="wishlist-add-to-cart-btn" onclick="profileManager.addToCartFromWishlist(${product.id})">
+                🛒 В корзину
+              </button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  async removeFromWishlist(productId) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        alert('Необходима авторизация');
+        return;
+      }
+
+      const response = await fetch(`${this.apiBase}/wishlist/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        this.loadWishlist();
+        this.showNotification('Товар удален из избранного');
+      } else {
+        alert('Ошибка при удалении из избранного');
+      }
+    } catch (error) {
+      console.error('Ошибка удаления из избранного:', error);
+      alert('Ошибка при удалении из избранного');
     }
-    
-    if (!privacyPolicy || !dataStorage) {
-      alert('Необходимо согласие со всеми условиями');
-      return;
+  }
+
+  async addToCartFromWishlist(productId) {
+    try {
+      if (window.cartManager) {
+        const success = await window.cartManager.addToCart(productId, 1);
+        if (success) {
+          this.showNotification('Товар добавлен в корзину');
+        }
+      } else {
+        alert('Ошибка: менеджер корзины не доступен');
+      }
+    } catch (error) {
+      console.error('Ошибка добавления в корзину:', error);
+      alert('Ошибка при добавлении в корзину');
     }
-    
-    // Регистрация пользователя
-    const userData = {
-      name: name,
-      email: email
+  }
+
+  getStatusText(status) {
+    const statusMap = {
+      'pending': 'Ожидает подтверждения',
+      'confirmed': 'Подтвержден',
+      'shipped': 'Отправлен',
+      'delivered': 'Доставлен',
+      'cancelled': 'Отменен'
     };
+    return statusMap[status] || status;
+  }
+
+  getCategoryName(category) {
+    const categoryMap = {
+      'sofa': 'Диваны',
+      'bed': 'Кровати',
+      'wardrobe': 'Шкафы'
+    };
+    return categoryMap[category] || category;
+  }
+
+  fixImageUrl(imageUrl) {
+    if (!imageUrl) return './img/placeholder.jpg';
     
-    login(userData);
-    alert('Регистрация прошла успешно! Вы вошли в систему.');
-  });
+    if (imageUrl.startsWith('/')) {
+      return '.' + imageUrl;
+    }
+    
+    if (imageUrl.startsWith('./')) {
+      return imageUrl;
+    }
+    
+    if (!imageUrl.startsWith('http') && !imageUrl.startsWith('./') && !imageUrl.startsWith('/')) {
+      return './' + imageUrl;
+    }
+    
+    return imageUrl;
+  }
 
-  // Обработчики кнопок
-  loginBtn.addEventListener('click', function() {
-    openAuthModal();
-  });
+  getAuthToken() {
+    if (window.auth && window.auth.getAuthToken) {
+      return window.auth.getAuthToken();
+    }
+    
+    const raw = localStorage.getItem('mebeldom_auth');
+    if (!raw) return null;
+    
+    try {
+      const user = JSON.parse(raw);
+      return user.token || user.access_token;
+    } catch {
+      return null;
+    }
+  }
 
-  logoutBtn.addEventListener('click', function() {
-    logout();
-    alert('Вы вышли из аккаунта');
-  });
+  showNotification(message) {
+    const existingNotifications = document.querySelectorAll('.profile-notification');
+    existingNotifications.forEach(notification => notification.remove());
 
-  // Инициализация
-  checkAuth();
-})();
+    const notification = document.createElement('div');
+    notification.className = 'profile-notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--brand-red);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      z-index: 10000;
+      animation: slideInRight 0.3s ease;
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => notification.remove(), 3000);
+  }
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('👤 PROFILE: Инициализация страницы профиля');
+  window.profileManager = new ProfileManager();
+});
 </script>
 </body>
 </html>
