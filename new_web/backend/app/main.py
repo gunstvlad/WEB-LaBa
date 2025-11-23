@@ -24,13 +24,14 @@ app.add_middleware(
 async def options_handler():
     return JSONResponse(status_code=200, content={})
 
-from .routers import users, products, cart, reviews, auth
+from .routers import users, products, cart, reviews, auth, orders
 
 app.include_router(auth.router, prefix="/api", tags=["auth"])
 app.include_router(users.router, prefix="/api", tags=["users"])
 app.include_router(products.router, prefix="/api", tags=["products"])
 app.include_router(cart.router, prefix="/api", tags=["cart"])
 app.include_router(reviews.router, prefix="/api", tags=["reviews"])
+app.include_router(orders.router, prefix="/api", tags=["orders"])
 
 
 @app.get("/")

@@ -6,6 +6,132 @@
 <title>Мебельный магазин</title>
 <link rel="stylesheet" href="css/index.css">
 <style>
+  /* Стили для слайдера ассортимента */
+  .assortment-section {
+    margin: 60px 0;
+  }
+  
+  .assortment-section h3 {
+    text-align: center;
+    margin-bottom: 8px;
+    color: #0f172a;
+    font-size: 28px;
+  }
+  
+  .assortment-lead {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .assortment-slider {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  
+  .assortment-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .product-slide {
+    flex: 0 0 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+  }
+  
+  .product-image {
+    width: 100%;
+    max-width: 700px;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+  
+  .product-info {
+    padding: 0 20px;
+  }
+  
+  .product-name {
+    font-size: 28px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 12px 0;
+  }
+  
+  .product-description {
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 18px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .assortment-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+  
+  .assortment-btn {
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--brand-red);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  
+  .assortment-btn:hover {
+    background: white;
+    transform: scale(1.1);
+  }
+  
+  .assortment-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  
+  .assortment-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .assortment-dot.active {
+    background: var(--brand-red);
+  }
+
   /* Стили для слайдера отзывов */
   .reviews-section {
     margin: 60px 0;
@@ -59,9 +185,14 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    object-fit: cover;
+    background-color: #d77272;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
     margin-right: 16px;
-    border: 2px solid var(--brand-red);
   }
   
   .review-info {
@@ -93,7 +224,7 @@
     font-style: italic;
   }
   
-  .slider-controls {
+  .reviews-controls {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -101,7 +232,7 @@
     margin-top: 30px;
   }
   
-  .slider-btn {
+  .reviews-btn {
     background: var(--brand-red);
     color: white;
     border: none;
@@ -116,23 +247,23 @@
     transition: all 0.3s ease;
   }
   
-  .slider-btn:hover {
+  .reviews-btn:hover {
     background: #b3151a;
     transform: scale(1.1);
   }
   
-  .slider-btn:disabled {
+  .reviews-btn:disabled {
     background: #cbd5e1;
     cursor: not-allowed;
     transform: none;
   }
   
-  .slider-dots {
+  .reviews-dots {
     display: flex;
     gap: 8px;
   }
   
-  .slider-dot {
+  .reviews-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -142,11 +273,30 @@
     transition: background 0.3s ease;
   }
   
-  .slider-dot.active {
+  .reviews-dot.active {
     background: var(--brand-red);
   }
   
   @media (max-width: 768px) {
+    .product-slide {
+      padding: 15px;
+    }
+    
+    .product-image {
+      height: 300px;
+      max-width: 100%;
+    }
+    
+    .product-name {
+      font-size: 24px;
+    }
+    
+    .assortment-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+    }
+    
     .review-slide {
       padding: 20px;
     }
@@ -321,8 +471,6 @@
         </div>
     </section>
 
-    <!-- ===== Reviews Slider Section ===== -->
-
     <!-- ===== Team Section ===== -->
     <section class="team-section" aria-label="Наша команда">
         <h3>Наша команда</h3>
@@ -354,6 +502,28 @@
             </div>
         </div>
     </section>
+
+    <!-- ===== Assortment Slider Section ===== -->
+    <section class="assortment-section" aria-label="Наш ассортимент">
+      <h3>Наш ассортимент</h3>
+      <p class="assortment-lead">Ознакомьтесь с разнообразием нашей качественной мебели для вашего дома</p>
+      
+      <div class="assortment-slider">
+        <div class="assortment-track" id="assortmentTrack">
+          <!-- Слайды будут добавлены через JavaScript -->
+        </div>
+        <div class="assortment-controls">
+          <button class="assortment-btn" id="assortmentPrevBtn" aria-label="Предыдущий товар">‹</button>
+          <button class="assortment-btn" id="assortmentNextBtn" aria-label="Следующий товар">›</button>
+        </div>
+      </div>
+      
+      <div class="assortment-dots" id="assortmentDots">
+        <!-- Точки навигации будут добавлены через JavaScript -->
+      </div>
+    </section>
+
+    <!-- ===== Reviews Slider Section ===== -->
     <section class="reviews-section" aria-label="Отзывы клиентов">
       <h3>Отзывы наших клиентов</h3>
       <p class="reviews-lead">Узнайте, что говорят о нас люди, которые уже обустроили свой дом с нашей мебелью</p>
@@ -364,38 +534,243 @@
         </div>
       </div>
       
-      <div class="slider-controls">
-        <button class="slider-btn" id="prevBtn" aria-label="Предыдущий отзыв">‹</button>
+      <div class="reviews-controls">
+        <button class="reviews-btn" id="reviewsPrevBtn" aria-label="Предыдущий отзыв">‹</button>
         
-        <div class="slider-dots" id="sliderDots">
+        <div class="reviews-dots" id="reviewsDots">
           <!-- Точки навигации будут добавлены через JavaScript -->
         </div>
         
-        <button class="slider-btn" id="nextBtn" aria-label="Следующий отзыв">›</button>
+        <button class="reviews-btn" id="reviewsNextBtn" aria-label="Следующий отзыв">›</button>
       </div>
     </section>
   </div>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div>
-      <strong>Мебельный Дом</strong><br/>
-      <span class="small">© 2025 — Все права защищены</span>
+  <div class="footer-container">
+    <!-- Контактная информация -->
+    <div class="footer-section">
+      <h4>Контакты</h4>
+      <p><strong>Адрес:</strong><br>г. Москва, Бутово,<br>ул. Адмирала Лазарева, д. 63</p>
+      <p><strong>Телефон:</strong><br><a href="tel:+74951234567">+7 (495) 123-45-67</a></p>
+      <p><strong>Email:</strong><br><a href="mailto:info@mebeldom.ru">info@mebeldom.ru</a></p>
     </div>
-    <div class="small">Контакты: info@example.com • +7 (900) 000-00-00</div>
+
+    <!-- Режим работы -->
+    <div class="footer-section">
+      <h4>Режим работы</h4>
+      <p><strong>Пн-Пт:</strong> 9:00 - 20:00</p>
+      <p><strong>Сб-Вс:</strong> 10:00 - 18:00</p>
+      <p>Без перерыва на обед</p>
+    </div>
+
+    <!-- Навигация -->
+    <div class="footer-section">
+      <h4>Навигация</h4>
+      <ul>
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="catalog.html">Каталог мебели</a></li>
+        <li><a href="contacts.html">Контакты</a></li>
+        <li><a href="about.html">О компании</a></li>
+        <li><a href="delivery.html">Доставка и сборка</a></li>
+      </ul>
+    </div>
+
+    <!-- Социальные сети -->
+    <div class="footer-section">
+      <h4>Мы в соцсетях</h4>
+      <div class="social-links">
+        <a href="https://vk.com/mebeldom" aria-label="ВКонтакте" target="_blank">VK</a>
+        <a href="https://t.me/mebeldom" aria-label="Telegram" target="_blank">TG</a>
+        <a href="https://wa.me/79991234567" aria-label="WhatsApp" target="_blank">WA</a>
+        <a href="https://instagram.com/mebeldom" aria-label="Instagram" target="_blank">IG</a>
+      </div>
+      <p style="margin-top: 15px; font-size: 14px; color: #999;">
+        Подписывайтесь на наши новости и акции
+      </p>
+    </div>
+
+    <!-- Копирайт и юридическая информация -->
+    <div class="footer-bottom">
+      <div class="copyright">
+        © 2025 ООО "Мебельный Дом". Все права защищены.<br>
+        ИНН: 1234567890 | ОГРН: 1234567890123
+      </div>
+      <div class="legal-links">
+        <a href="privacy.html">Политика конфиденциальности</a>
+        <a href="terms.html">Пользовательское соглашение</a>
+        <a href="return.html">Условия возврата</a>
+      </div>
+    </div>
   </div>
 </footer>
 
 <script src="js/auth.js"></script>
 <script>
 
-// Инициализация слайдера
+// Инициализация слайдера ассортимента
+function initAssortmentSlider() {
+  const track = document.getElementById('assortmentTrack');
+  const dotsContainer = document.getElementById('assortmentDots');
+  const prevBtn = document.getElementById('assortmentPrevBtn');
+  const nextBtn = document.getElementById('assortmentNextBtn');
+  
+  // Данные о товарах
+  const productsData = [
+    {
+      id: 1,
+      name: "Современные кровати",
+      description: "Удобные и стильные кровати с ортопедическими матрасами для здорового сна",
+      image: "./img/bed1.png",
+      category: "bed"
+    },
+    {
+      id: 2,
+      name: "Вместительные шкафы",
+      description: "Просторные шкафы для хранения одежды и аксессуаров с современным дизайном",
+      image: "./img/wardrobe1.png",
+      category: "wardrobe"
+    },
+    {
+      id: 3,
+      name: "Комфортные диваны",
+      description: "Мягкие и практичные диваны для гостиной, доступные в различных цветах и размерах",
+      image: "./img/sofa1.png",
+      category: "sofa"
+    },
+    {
+      id: 4,
+      name: "Обеденные столы",
+      description: "Элегантные столы для семейных обедов и приема гостей из натуральных материалов",
+      image: "./img/stol.png",
+      category: "table"
+    },
+    {
+      id: 5,
+      name: "Комоды и тумбы",
+      description: "Функциональные комоды для хранения вещей с эргономичным дизайном",
+      image: "./img/comod.png",
+      category: "chest"
+    }
+  ];
+  
+  let currentSlide = 0;
+  let autoSlideInterval;
+  
+  // Создание слайдов
+  function createSlides() {
+    track.innerHTML = '';
+    dotsContainer.innerHTML = '';
+    
+    productsData.forEach((product, index) => {
+      // Создание слайда
+      const slide = document.createElement('div');
+      slide.className = 'product-slide';
+      slide.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" class="product-image">
+        <div class="product-info">
+          <h4 class="product-name">${product.name}</h4>
+          <p class="product-description">${product.description}</p>
+        </div>
+      `;
+      track.appendChild(slide);
+      
+      // Создание точки навигации
+      const dot = document.createElement('button');
+      dot.className = `assortment-dot ${index === 0 ? 'active' : ''}`;
+      dot.setAttribute('aria-label', `Перейти к товару ${index + 1}`);
+      dot.addEventListener('click', () => goToSlide(index));
+      dotsContainer.appendChild(dot);
+    });
+  }
+  
+  // Переход к конкретному слайду
+  function goToSlide(slideIndex) {
+    currentSlide = slideIndex;
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    
+    // Обновление активной точки
+    document.querySelectorAll('.assortment-dot').forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentSlide);
+    });
+  }
+  
+  // Следующий слайд
+  function nextSlide() {
+    if (currentSlide < productsData.length - 1) {
+      goToSlide(currentSlide + 1);
+    } else {
+      goToSlide(0);
+    }
+  }
+  
+  // Предыдущий слайд
+  function prevSlide() {
+    if (currentSlide > 0) {
+      goToSlide(currentSlide - 1);
+    } else {
+      goToSlide(productsData.length - 1);
+    }
+  }
+  
+  // Автоматическое перелистывание
+  function startAutoSlide() {
+    autoSlideInterval = setInterval(() => {
+      nextSlide();
+    }, 4000); // Меняем слайд каждые 4 секунды
+  }
+  
+  // Остановка автоматического перелистывания при взаимодействии
+  function stopAutoSlide() {
+    clearInterval(autoSlideInterval);
+  }
+  
+  // Инициализация событий
+  prevBtn.addEventListener('click', () => {
+    prevSlide();
+    stopAutoSlide();
+    startAutoSlide();
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    nextSlide();
+    stopAutoSlide();
+    startAutoSlide();
+  });
+  
+  // Свайпы для мобильных устройств
+  let startX = 0;
+  track.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    stopAutoSlide();
+  });
+  
+  track.addEventListener('touchend', (e) => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+    
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+    startAutoSlide();
+  });
+  
+  // Запуск инициализации
+  createSlides();
+  startAutoSlide();
+}
+
+// Инициализация слайдера отзывов
 async function initReviewsSlider() {
   const track = document.getElementById('reviewsTrack');
-  const dotsContainer = document.getElementById('sliderDots');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
+  const dotsContainer = document.getElementById('reviewsDots');
+  const prevBtn = document.getElementById('reviewsPrevBtn');
+  const nextBtn = document.getElementById('reviewsNextBtn');
   
   let reviewsData = [];
   let currentSlide = 0;
@@ -446,7 +821,7 @@ async function initReviewsSlider() {
       slide.className = 'review-slide';
       slide.innerHTML = `
         <div class="review-header">
-          <div class="review-avatar" style="background-color: #d77272; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">
+          <div class="review-avatar">
             ${review.user_name.charAt(0)}
           </div>
           <div class="review-info">
@@ -461,7 +836,7 @@ async function initReviewsSlider() {
       
       // Создание точки навигации
       const dot = document.createElement('button');
-      dot.className = `slider-dot ${index === 0 ? 'active' : ''}`;
+      dot.className = `reviews-dot ${index === 0 ? 'active' : ''}`;
       dot.setAttribute('aria-label', `Перейти к отзыву ${index + 1}`);
       dot.addEventListener('click', () => goToSlide(index));
       dotsContainer.appendChild(dot);
@@ -474,7 +849,7 @@ async function initReviewsSlider() {
     track.style.transform = `translateX(-${currentSlide * 100}%)`;
     
     // Обновление активной точки
-    document.querySelectorAll('.slider-dot').forEach((dot, index) => {
+    document.querySelectorAll('.reviews-dot').forEach((dot, index) => {
       dot.classList.toggle('active', index === currentSlide);
     });
     
@@ -502,7 +877,6 @@ async function initReviewsSlider() {
     }
   }
   
-  
   // Инициализация событий
   prevBtn.addEventListener('click', prevSlide);
   nextBtn.addEventListener('click', nextSlide);
@@ -517,7 +891,7 @@ async function initReviewsSlider() {
     const endX = e.changedTouches[0].clientX;
     const diff = startX - endX;
     
-    if (Math.abs(diff) > 50) { // Минимальное расстояние свайпа
+    if (Math.abs(diff) > 50) {
       if (diff > 0) {
         nextSlide();
       } else {
@@ -531,8 +905,9 @@ async function initReviewsSlider() {
   updateButtons();
 }
 
-// Запуск слайдера после загрузки DOM
+// Запуск слайдеров после загрузки DOM
 document.addEventListener('DOMContentLoaded', function() {
+  initAssortmentSlider();
   initReviewsSlider();
   
   // Остальной ваш код...

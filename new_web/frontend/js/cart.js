@@ -54,7 +54,7 @@ class CartManager {
   }
 
   async handleCheckout() {
-  console.log('🛒 CART: Начинаем оформление заказа');
+  console.log('🛒 CART: Начинаем оформление заказа (ЗАГЛУШКА)');
   
   if (this.cartItems.length === 0) {
     alert('Корзина пуста');
@@ -67,59 +67,58 @@ class CartManager {
     return;
   }
 
-  // Подтверждение оформления заказа
-  if (!confirm(`Оформить заказ на сумму ${this.calculateTotal().toLocaleString('ru-RU')} ₽?`)) {
-    return;
-  }
-
-  try {
-    const token = this.getAuthToken();
-    if (!token) {
-      alert('Ошибка авторизации');
-      return;
-    }
-
-    // Создаем заказ БЕЗ дополнительных данных
-    const orderData = {
-      items: this.cartItems.map(item => ({
-        product_id: item.product_id,
-        quantity: item.quantity
-      }))
-      // shipping_address и phone_number больше не требуются
-    };
-
-    const response = await fetch(`${this.apiBase}/orders/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(orderData)
-    });
-
-    if (response.ok) {
-      const order = await response.json();
-      console.log('✅ CART: Заказ успешно создан', order);
-      
-      // Очищаем корзину после успешного оформления
+  const totalAmount = this.calculateTotal();
+  
+  // Простое подтверждение и очистка корзины
+  if (confirm(`✅ Заказ успешно оформлен!\nСумма: ${totalAmount.toLocaleString('ru-RU')} ₽\n\nСпасибо за покупку!`)) {
+    try {
+      // Очищаем корзину
       await this.clearCart();
-      
-      // Показываем подтверждение
-      alert(`Заказ #${order.id} успешно оформлен!\nСумма: ${order.total_amount} ₽\nСтатус: ${this.getOrderStatusText(order.status)}\n\nСпасибо за покупку!`);
-      
-      // Обновляем страницу профиля если она открыта
-      if (window.profileManager) {
-        window.profileManager.loadOrders();
-      }
-    } else {
-      const error = await response.json();
-      console.error('❌ CART: Ошибка создания заказа', error);
-      alert(`Ошибка оформления заказа: ${error.detail || 'Неизвестная ошибка'}`);
+      console.log('🛒 CART: Корзина очищена после "оформления" заказа');
+    } catch (error) {
+      console.error('❌ CART: Ошибка при очистке корзины:', error);
     }
-  } catch (error) {
-    console.error('❌ CART: Ошибка сети при оформлении заказа', error);
-    alert('Ошибка сети при оформлении заказа');
   }
+}
+
+// Добавьте этот метод в класс CartManager
+diagnoseCart() {
+  console.log('🔍 CART: Диагностика корзины:');
+  console.log('📊 Общее количество элементов:', this.cartItems.length);
+  
+  // ПРАВИЛЬНАЯ проверка полей
+  const validItems = this.cartItems.filter(item => {
+    const hasProductId = item.product_id != null; // product_id без подчеркивания
+    const hasProduct = item.product != null;
+    const hasPrice = item.product && item.product.price != null;
+    
+    console.log(`📦 Элемент ${item.id}:`, {
+      product_id: item.product_id,
+      hasProduct: !!item.product,
+      price: item.product?.price,
+      isValid: hasProductId && hasProduct && hasPrice
+    });
+    
+    return hasProductId && hasProduct && hasPrice;
+  });
+  
+  const invalidItems = this.cartItems.filter(item => 
+    item.product_id == null || !item.product || item.product.price == null
+  );
+  
+  console.log('✅ Валидные элементы:', validItems.length);
+  console.log('❌ Невалидные элементы:', invalidItems.length);
+  
+  // Выведем полную структуру первого элемента для анализа
+  if (this.cartItems.length > 0) {
+    console.log('🔎 Полная структура первого элемента:', JSON.stringify(this.cartItems[0], null, 2));
+  }
+  
+  return {
+    total: this.cartItems.length,
+    valid: validItems.length,
+    invalid: invalidItems.length
+  };
 }
 
   getOrderStatusText(status) {
@@ -689,7 +688,7 @@ class CartManager {
         padding: 18px 32px;
         border-radius: 12px;
         cursor: pointer;
-        font-size: 18px;
+        font-size: 12px;
         font-weight: 600;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(var(--brand-red-rgb), 0.3);

@@ -87,3 +87,42 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+    
+    
+# backend/app/schemas.py
+# Добавьте после Review схем
+
+# Order Schemas
+class OrderItemBase(BaseModel):
+    product_id: int
+    quantity: int
+    price: float
+
+class OrderItemCreate(BaseModel):
+    product_id: int
+    quantity: int
+    #price: Optional[float] = None  # Сделайте необязательным
+
+class OrderItemResponse(OrderItemBase):
+    id: int
+    product_name: str
+    
+    class Config:
+        from_attributes = True
+
+class OrderBase(BaseModel):
+    total_amount: float
+    status: str = "pending"
+
+class OrderCreate(BaseModel):
+    items: List[OrderItemCreate]
+
+class OrderResponse(OrderBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    items: List[OrderItemResponse]
+    
+    class Config:
+        from_attributes = True

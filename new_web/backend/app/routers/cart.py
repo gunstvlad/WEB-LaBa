@@ -65,7 +65,12 @@ def get_current_user(token: Optional[str] = None, authorization: Optional[str] =
 @router.get("/cart", response_model=List[schemas.CartItemResponse])
 def get_cart_items(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
     logger.info(f"🛒 Получение корзины для пользователя: {current_user.email}")
-    cart_items = db.query(models.CartItem).filter(models.CartItem.user_id == current_user.id).all()
+    
+    # Используем join чтобы загрузить связанные товары и отфильтровать невалидные
+    cart_items = db.query(models.CartItem).join(models.Product).filter(
+        models.CartItem.user_id == current_user.id
+    ).all()
+    
     logger.info(f"🛒 Найдено элементов в корзине: {len(cart_items)}")
     return cart_items
 

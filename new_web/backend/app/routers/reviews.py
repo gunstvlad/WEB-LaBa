@@ -1,17 +1,34 @@
 # backend/app/routers/reviews.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from ..database import get_db
 from .. import models, schemas, auth
 
 router = APIRouter()
 
-def get_current_user_optional(token: str = Depends(auth.verify_token), db: Session = Depends(get_db)):
+def get_current_user_from_header(
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+):
+    if not authorization:
+        return None
+    
     try:
-        user = db.query(models.User).filter(models.User.email == token.get("sub")).first()
+        # Извлекаем токен из заголовка Authorization: Bearer <token>
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            return None
+            
+        payload = auth.verify_token(token)
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+            
+        user = db.query(models.User).filter(models.User.email == email).first()
         return user
-    except:
+    except Exception as e:
+        print(f"Auth error: {e}")
         return None
 
 @router.get("/reviews", response_model=List[schemas.ReviewResponse])
@@ -20,7 +37,11 @@ def get_reviews(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return reviews
 
 @router.post("/reviews", response_model=schemas.ReviewResponse)
-def create_review(review: schemas.ReviewCreate, current_user: models.User = Depends(get_current_user_optional), db: Session = Depends(get_db)):
+def create_review(
+    review: schemas.ReviewCreate, 
+    current_user: models.User = Depends(get_current_user_from_header), 
+    db: Session = Depends(get_db)
+):
     if not current_user:
         raise HTTPException(status_code=401, detail="Необходима авторизация")
     
